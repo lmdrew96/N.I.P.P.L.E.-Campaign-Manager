@@ -149,27 +149,78 @@
   ],
   "encounterTables": {
     "gtscRiding": [
-      {"name": "The Zoomies", "description": "DC 15 DEX save or fall prone"},
-      {"name": "Sudden Nap Time", "description": "Cat stops and sleeps, DC 14 Persuasion to wake"},
-      {"name": "I Saw Something", "description": "Stares at nothing for 1d4 minutes"},
-      {"name": "Grooming Break", "description": "DC 13 DEX save or get slimed"},
-      {"name": "Red Dot Phenomena", "description": "Must chase mysterious light, 10-min detour"},
-      {"name": "Hairball Incident", "description": "DC 12 CON save or poisoned 10 min"},
-      {"name": "Perfectly Smooth Travel", "description": "Advantage on next skill check"}
+      {
+        "name": "The Zoomies",
+        "description": "DC 15 DEX save or fall prone"
+      },
+      {
+        "name": "Sudden Nap Time",
+        "description": "Cat stops and sleeps, DC 14 Persuasion to wake"
+      },
+      {
+        "name": "I Saw Something",
+        "description": "Stares at nothing for 1d4 minutes"
+      },
+      {
+        "name": "Grooming Break",
+        "description": "DC 13 DEX save or get slimed"
+      },
+      {
+        "name": "Red Dot Phenomena",
+        "description": "Must chase mysterious light, 10-min detour"
+      },
+      {
+        "name": "Hairball Incident",
+        "description": "DC 12 CON save or poisoned 10 min"
+      },
+      {
+        "name": "Perfectly Smooth Travel",
+        "description": "Advantage on next skill check"
+      }
     ],
     "stationEvents": [
-      {"name": "Cargo Mix-up", "description": "Wrong package delivered, contains something weird"},
-      {"name": "System Malfunction", "description": "Gravity fails in one section"},
-      {"name": "Corporate Inspector", "description": "Surprise compliance audit"},
-      {"name": "Angry Customer", "description": "Demands compensation for late delivery"},
-      {"name": "Pirates Docking", "description": "Suspicious ship requests emergency docking"}
+      {
+        "name": "Cargo Mix-up",
+        "description": "Wrong package delivered, contains something weird"
+      },
+      {
+        "name": "System Malfunction",
+        "description": "Gravity fails in one section"
+      },
+      {
+        "name": "Corporate Inspector",
+        "description": "Surprise compliance audit"
+      },
+      {
+        "name": "Angry Customer",
+        "description": "Demands compensation for late delivery"
+      },
+      {
+        "name": "Pirates Docking",
+        "description": "Suspicious ship requests emergency docking"
+      }
     ],
     "feyspaceWeird": [
-      {"name": "Colors Taste Like Music", "description": "Synesthesia for 1 hour"},
-      {"name": "Gravity Points Wrong Way", "description": "Falls go sideways"},
-      {"name": "Everyone Speaks in Rhyme", "description": "Can't stop until scene ends"},
-      {"name": "Objects Remember Being Trees", "description": "Wooden items sprout leaves"},
-      {"name": "Time Hiccups", "description": "Random 6-second rewinds"}
+      {
+        "name": "Colors Taste Like Music",
+        "description": "Synesthesia for 1 hour"
+      },
+      {
+        "name": "Gravity Points Wrong Way",
+        "description": "Falls go sideways"
+      },
+      {
+        "name": "Everyone Speaks in Rhyme",
+        "description": "Can't stop until scene ends"
+      },
+      {
+        "name": "Objects Remember Being Trees",
+        "description": "Wooden items sprout leaves"
+      },
+      {
+        "name": "Time Hiccups",
+        "description": "Random 6-second rewinds"
+      }
     ]
   },
   "dmReference": [
@@ -191,10 +242,81 @@
     }
   ],
   "quickReference": [
-    {"title": "Can Opener", "content": "Summons 1d6 GTSCs in 1d4 rounds"},
-    {"title": "Here Kitty", "content": "Insulting to GTSCs, roll d10 for reaction"},
-    {"title": "FeySpace Magic", "content": "Wild, unpredictable, being strip-mined"},
-    {"title": "TWiG", "content": "That Which Is Good - Tony's true father"},
-    {"title": "TWiB", "content": "That Which Is Bad - Controls N.I.P.P.L.E."}
+    {
+      "title": "Can Opener",
+      "content": "Summons 1d6 GTSCs in 1d4 rounds"
+    },
+    {
+      "title": "Here Kitty",
+      "content": "Insulting to GTSCs, roll d10 for reaction"
+    },
+    {
+      "title": "FeySpace Magic",
+      "content": "Wild, unpredictable, being strip-mined"
+    },
+    {
+      "title": "TWiG",
+      "content": "That Which Is Good - Tony's true father"
+    },
+    {
+      "title": "TWiB",
+      "content": "That Which Is Bad - Controls N.I.P.P.L.E."
+    }
+  ],
+  "magicItems": [
+    {
+      "name": "Terms & Conditions Shroud",
+      "type": "Wondrous item",
+      "rarity": "rare",
+      "attunement": "a Paladin devoted to N.I.P.P.L.E.",
+      "description": "A sleek, flexible mantle threaded with micro-projectors. When active, fine print shimmers across your surface like starlit contracts.",
+      "charges": {
+        "max": 5,
+        "recharge": "1d4+1"
+      },
+      "features": [
+        {
+          "name": "Charges & Risk",
+          "description": "Holds **5 charges**; regains **1d4+1** at dawn. When you roll a **natural 1** while using any feature of this item, you take **1d6 psychic** damage and the Shroud goes **offline until the end of your next turn**."
+        },
+        {
+          "name": "Arbitration Field (2 charges)",
+          "description": "Action. Create a **15-foot-radius** zone centered on you for **1 minute**. Creatures that enter or start their turn in the zone make a **Charisma** saving throw against your spell save DC; on a failure, they are affected as by *zone of truth* **while in the area**."
+        },
+        {
+          "name": "Clause Binding (no charge; passive while the Field is active)",
+          "description": "A creature **inside the Arbitration Field** that **willingly speaks** a promise of **25 words or fewer** becomes **Bound** for **7 days**. If it later **knowingly** breaks that promise, you may use a **Reaction (once per creature per clause)**:  * If the creature is within **60 feet**, it takes **3d8 psychic** damage and **can’t take reactions** until your next turn.  * If it’s farther away, you immediately learn its **general direction** and **approximate distance** (mile-scale ping)."
+        },
+        {
+          "name": "Corporate Override (1 charge)",
+          "description": "Reaction. When an ally within **30 feet** fails an **ability** or **tool** check by **3 or less**, it **succeeds** instead."
+        },
+        {
+          "name": "Complaint Resolution (1 charge)",
+          "description": "Reaction. When a visible creature within **60 feet** **breaches an agreement** made with you today (verbal or written), it makes a **Wisdom** saving throw. On a failure, it takes **3d8 psychic** damage and **can’t take reactions** until the start of your next turn. On a success, it has **disadvantage** on its next action against you."
+        }
+      ]
+    },
+    {
+      "name": "Sleeve of Assemblers",
+      "type": "Wondrous item",
+      "rarity": "rare",
+      "attunement": true,
+      "description": "A forearm sheath studded with micro-fabricators and retractable printheads.",
+      "charges": {
+        "max": 4,
+        "recharge": "2d6 HP"
+      },
+      "features": [
+        {
+          "name": "Attunement & Charges",
+          "description": "Holds **4 charges**; regains all charges after a **long rest**. On any **natural 1** while using a feature of this item, you take **1d6 fire** damage and the Sleeve goes **offline until the end of your next turn**."
+        },
+        {
+          "name": "Actions (1 charge each unless noted):**  \n **Keygrow",
+          "description": "Print a one-use **bypass pick** keyed to a specific lock/panel. You have **advantage on the next check** to open/override it within **1 minute**; the tool **dissolves on success**.    **Surface Forge.** **Manifest** a **simple tool** or **simple weapon** (counts as **magical**) for **1 minute** or until dropped.    **Skin-Stitch.** **Stabilize** a creature and set it to **1 HP**; **constructs** instead regain **2d6 HP**.    **Thread-the-Needle (Bonus Action).** This turn, you have **advantage** on **one** **Dexterity (Sleight of Hand)** or **tool** check to tinker/hack.    **Soft Shutdown.** Choose a **non-sentient machine** (camera, turret, door motor, drone) you can see within **30 ft**. It must succeed on a **DC 14 Constitution save** or **power-cycle off** for **1 minute** (ends if it takes damage). **On a success**, it has **disadvantage on its next action/check**."
+        }
+      ]
+    }
   ]
 }

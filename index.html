@@ -476,15 +476,16 @@
             </div>
 
             <div class="help-text">
-                <h4>📝 Format Your Prep Docs for Best Results:</h4>
+                <h4>🧠 Smart Document Parser</h4>
+                <p style="margin-bottom: 0.5rem;">The parser now intelligently recognizes content without requiring specific formatting! It can:</p>
                 <ul>
-                    <li><strong>NPCs:</strong> Start lines with "NPC:" or use heading "NPCs"</li>
-                    <li><strong>Encounters:</strong> Use heading "Encounters" or "Combat"</li>
-                    <li><strong>Revelations:</strong> Use heading "Revelations" or "Secrets"</li>
-                    <li><strong>Session Notes:</strong> Use heading "Session" or "Notes"</li>
-                    <li><strong>Items:</strong> Use heading "Items" or "Loot"</li>
+                    <li><strong>NPCs:</strong> Detects names, roles, and descriptions automatically</li>
+                    <li><strong>Encounters:</strong> Identifies combat, social, and puzzle encounters</li>
+                    <li><strong>Revelations:</strong> Finds secrets, plot twists, and hidden information</li>
+                    <li><strong>Items:</strong> Recognizes weapons, armor, and magical items</li>
+                    <li><strong>Context-Aware:</strong> Uses natural language patterns to classify content</li>
                 </ul>
-                <p style="margin-top: 0.5rem;">The parser looks for keywords and headings to organize content automatically!</p>
+                <p style="margin-top: 0.5rem; font-style: italic;">Just write naturally! The parser will figure out what's what. Headers and keywords still help, but aren't required.</p>
             </div>
 
             <div id="parse-status"></div>
@@ -547,7 +548,10 @@
             revelations: [],
             preparedEncounters: [],
             sessionNotes: [],
-            items: []
+            items: [],
+            plotHooks: [],
+            mechanics: [],
+            lore: []
         };
 
         let editorMode = false;
@@ -629,123 +633,648 @@
                 encounters: [],
                 revelations: [],
                 items: [],
+                magicItems: [],
+                plotHooks: [],
+                mechanics: [],
+                lore: [],
                 notes: [],
                 raw: text
             };
             
+            // Enhanced pattern recognition
+            const patterns = {
+                // NPC indicators - names, titles, roles
+                npcIndicators: /\b(is a|is an|works as|serves as|known as|called|named|title:|role:|job:|occupation:|position:)\b/i,
+                npcNames: /^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*(?:\s+(?:the|von|van|de|del|la)\s+[A-Z][a-z]+)?)\s*[-–—:]/,
+                properNouns: /\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3}\b/g,
+                
+                // Encounter indicators
+                encounterIndicators: /\b(fight|battle|combat|encounter|ambush|attack|defend|CR\s*\d+|challenge rating|difficulty|enemies|monsters|creatures)\b/i,
+                encounterTypes: /\b(social|combat|puzzle|exploration|trap|skill challenge)\b/i,
+                crPattern: /\bCR\s*(\d+(?:\/\d+)?)\b/i,
+                
+                // Revelation indicators
+                revelationIndicators: /\b(secret|reveal|discover|learn|truth|hidden|mystery|plot|twist|surprise|doesn't know|unaware|actually|really)\b/i,
+                timingIndicators: /\b(act\s*\d+|level\s*\d+|session\s*\d+|when|after|before|during|eventually|later|soon)\b/i,
+                
+                // Item indicators
+                itemIndicators: /\b(item|weapon|armor|potion|scroll|ring|amulet|wand|staff|treasure|loot|magic|artifact|\+\d+)\b/i,
+                
+                // Plot hook indicators
+                plotHookIndicators: /\b(plot hook|adventure hook|quest|mission|task|party|players could|might|scenario|situation)\b/i,
+                
+                // Mechanics/table indicators
+                mechanicsIndicators: /\b(roll|table|d\d+|DC\s*\d+|check|save|ability|mechanic|rule|when|if)\b/i,
+                tablePattern: /^\d+[\.)]\s+.+/,
+                
+                // Lore indicators
+                loreIndicators: /\b(history|lore|background|origin|legend|myth|known|believed|ancient|old)\b/i,
+                
+                // Structural markers
+                headers: /^#{1,6}\s+(.+)$/,
+                bullets: /^[\*\-•]\s+(.+)$/,
+                numbered: /^\d+[\.)]\s+(.+)$/,
+                bold: /\*\*(.+?)\*\*/g,
+                
+                // Contextual clues
+                descriptions: /\b(description|appears|looks like|seems|wearing|carrying|has|with)\b/i,
+                motivations: /\b(wants|needs|seeks|desires|goal|motivation|trying to|plans to)\b/i,
+                relationships: /\b(ally|enemy|friend|rival|works with|opposes|serves|loyal to)\b/i
+            };
+            
             const lines = text.split('\n');
-            let currentSection = 'notes';
-            let currentItem = null;
+            let context = {
+                currentSection: null,
+                lastHeader: null,
+                recentProperNouns: [],
+                paragraphBuffer: [],
+                inList: false
+            };
             
-            for (let line of lines) {
-                const trimmed = line.trim();
-                if (!trimmed) continue;
-                
-                // Check for section headers
-                if (/^#{1,3}\s*(NPCs?|Characters?)/i.test(trimmed)) {
-                    currentSection = 'npcs';
-                    continue;
-                } else if (/^#{1,3}\s*(Encounters?|Combat)/i.test(trimmed)) {
-                    currentSection = 'encounters';
-                    continue;
-                } else if (/^#{1,3}\s*(Revelations?|Secrets?|Reveals?)/i.test(trimmed)) {
-                    currentSection = 'revelations';
-                    continue;
-                } else if (/^#{1,3}\s*(Items?|Loot|Treasure)/i.test(trimmed)) {
-                    currentSection = 'items';
-                    continue;
-                } else if (/^#{1,3}\s*(Session|Notes?|Summary)/i.test(trimmed)) {
-                    currentSection = 'notes';
+            // First pass: identify sections and structure
+            const sections = identifySections(lines, patterns);
+            
+            // Second pass: intelligent content extraction
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) {
+                    // Empty line - process buffered paragraph
+                    if (context.paragraphBuffer.length > 0) {
+                        processParagraph(context.paragraphBuffer.join(' '), context, parsed, patterns);
+                        context.paragraphBuffer = [];
+                    }
                     continue;
                 }
                 
-                // Parse content based on current section
-                switch (currentSection) {
-                    case 'npcs':
-                        if (/^(NPC:|Character:|Name:|\*\*|##\s)/i.test(trimmed)) {
-                            if (currentItem) parsed.npcs.push(currentItem);
-                            currentItem = {
-                                name: trimmed.replace(/^(NPC:|Character:|Name:|\*\*|##\s)/i, '').replace(/\*\*/g, '').trim(),
-                                description: ''
-                            };
-                        } else if (currentItem) {
-                            // Look for role indicators
-                            if (/^(Role:|Type:|Job:)/i.test(trimmed)) {
-                                currentItem.role = trimmed.replace(/^(Role:|Type:|Job:)/i, '').trim();
-                            } else if (/^(Secret:|Hidden:|DM Note:)/i.test(trimmed)) {
-                                currentItem.secret = trimmed.replace(/^(Secret:|Hidden:|DM Note:)/i, '').trim();
-                            } else {
-                                currentItem.description += (currentItem.description ? ' ' : '') + trimmed;
-                            }
-                        }
-                        break;
-                        
-                    case 'encounters':
-                        if (/^(Encounter:|Combat:|Battle:|##\s)/i.test(trimmed)) {
-                            if (currentItem) parsed.encounters.push(currentItem);
-                            currentItem = {
-                                name: trimmed.replace(/^(Encounter:|Combat:|Battle:|##\s)/i, '').trim(),
-                                description: '',
-                                type: 'Combat'
-                            };
-                        } else if (currentItem) {
-                            if (/^(CR:|Difficulty:|Challenge:)/i.test(trimmed)) {
-                                currentItem.cr = trimmed.replace(/^(CR:|Difficulty:|Challenge:)/i, '').trim();
-                            } else if (/^(Type:)/i.test(trimmed)) {
-                                currentItem.type = trimmed.replace(/^(Type:)/i, '').trim();
-                            } else {
-                                currentItem.description += (currentItem.description ? ' ' : '') + trimmed;
-                            }
-                        }
-                        break;
-                        
-                    case 'revelations':
-                        if (/^(Revelation:|Secret:|Reveal:|##\s)/i.test(trimmed)) {
-                            if (currentItem) parsed.revelations.push(currentItem);
-                            currentItem = {
-                                title: trimmed.replace(/^(Revelation:|Secret:|Reveal:|##\s)/i, '').trim(),
-                                description: '',
-                                when: 'TBD'
-                            };
-                        } else if (currentItem) {
-                            if (/^(When:|Timing:|Trigger:)/i.test(trimmed)) {
-                                currentItem.when = trimmed.replace(/^(When:|Timing:|Trigger:)/i, '').trim();
-                            } else {
-                                currentItem.description += (currentItem.description ? ' ' : '') + trimmed;
-                            }
-                        }
-                        break;
-                        
-                    case 'items':
-                        if (/^(Item:|Loot:|##\s)/i.test(trimmed) || /^\*\s/.test(trimmed)) {
-                            if (currentItem) parsed.items.push(currentItem);
-                            currentItem = {
-                                name: trimmed.replace(/^(Item:|Loot:|##\s|\*\s)/i, '').trim(),
-                                description: ''
-                            };
-                        } else if (currentItem) {
-                            currentItem.description += (currentItem.description ? ' ' : '') + trimmed;
-                        }
-                        break;
-                        
-                    case 'notes':
-                    default:
-                        parsed.notes.push(trimmed);
-                        break;
-                }
+                // Update context based on line
+                updateContext(line, context, patterns, sections[i]);
+                
+                // Buffer line for paragraph processing
+                context.paragraphBuffer.push(line);
             }
             
-            // Don't forget the last item
-            if (currentItem) {
-                switch (currentSection) {
-                    case 'npcs': parsed.npcs.push(currentItem); break;
-                    case 'encounters': parsed.encounters.push(currentItem); break;
-                    case 'revelations': parsed.revelations.push(currentItem); break;
-                    case 'items': parsed.items.push(currentItem); break;
-                }
+            // Process any remaining buffered content
+            if (context.paragraphBuffer.length > 0) {
+                processParagraph(context.paragraphBuffer.join(' '), context, parsed, patterns);
             }
+            
+            // Third pass: intelligent entity extraction from unstructured text
+            extractEntitiesFromText(text, parsed, patterns);
+            
+            // Fourth pass: specialized magic item parsing
+            parseMagicItems(text, parsed);
+            
+            // Clean up and deduplicate
+            parsed.npcs = deduplicateByName(parsed.npcs);
+            parsed.encounters = deduplicateByName(parsed.encounters);
+            parsed.revelations = deduplicateByName(parsed.revelations, 'title');
+            parsed.items = deduplicateByName(parsed.items);
+            parsed.magicItems = deduplicateByName(parsed.magicItems);
             
             return parsed;
+        }
+        
+        function parseMagicItems(text, parsed) {
+            // Parse magic items in the format from the Promotion Magic Items document
+            // Format: # **Item Name**
+            //         *Wondrous item (rarity), requires attunement*
+            //         Description
+            //         **Feature.** Description
+            
+            const magicItemPattern = /^#\s+\*\*(.+?)\*\*\s*$([\s\S]*?)(?=^#\s+\*\*|$)/gm;
+            let match;
+            
+            while ((match = magicItemPattern.exec(text)) !== null) {
+                const name = match[1].trim();
+                const content = match[2].trim();
+                
+                // Extract rarity and attunement from italic line
+                const rarityMatch = content.match(/^\*(.+?)\*$/m);
+                let rarity = 'unknown';
+                let attunement = null;
+                let itemType = 'Wondrous item';
+                
+                if (rarityMatch) {
+                    const rarityLine = rarityMatch[1];
+                    
+                    // Extract item type
+                    const typeMatch = rarityLine.match(/^([^(]+?)\s*\(/);
+                    if (typeMatch) {
+                        itemType = typeMatch[1].trim();
+                    }
+                    
+                    // Extract rarity
+                    const rarityPattern = /\((common|uncommon|rare|very rare|legendary|artifact)\)/i;
+                    const rarityResult = rarityLine.match(rarityPattern);
+                    if (rarityResult) {
+                        rarity = rarityResult[1].toLowerCase();
+                    }
+                    
+                    // Extract attunement
+                    if (rarityLine.includes('requires attunement')) {
+                        const attunementMatch = rarityLine.match(/requires attunement(?: by (.+?))?$/);
+                        attunement = attunementMatch && attunementMatch[1] ? attunementMatch[1].trim() : true;
+                    }
+                }
+                
+                // Extract description (first paragraph after rarity line)
+                const descMatch = content.match(/^\*.*?\*\s*\n\n(.+?)(?=\n\n\*\*|$)/s);
+                const description = descMatch ? descMatch[1].trim() : '';
+                
+                // Extract charges info
+                let charges = null;
+                const chargesMatch = content.match(/Holds?\s+\*\*(\d+)\s+charges?\*\*/i);
+                if (chargesMatch) {
+                    const rechargeMatch = content.match(/regains?\s+\*\*(.+?)\*\*(?:\s+at\s+(\w+))?/i);
+                    charges = {
+                        max: parseInt(chargesMatch[1]),
+                        recharge: rechargeMatch ? rechargeMatch[1].trim() : 'unknown',
+                        timing: rechargeMatch && rechargeMatch[2] ? rechargeMatch[2] : null
+                    };
+                }
+                
+                // Extract features (bold headers with content)
+                const features = [];
+                const featurePattern = /\*\*(.+?)\.\*\*\s+(.+?)(?=\n\*\*|\n\n\*\*|$)/gs;
+                let featureMatch;
+                
+                while ((featureMatch = featurePattern.exec(content)) !== null) {
+                    const featureName = featureMatch[1].trim();
+                    const featureDesc = featureMatch[2].trim().replace(/\n/g, ' ');
+                    
+                    // Extract charge cost if present in feature name
+                    let chargeCost = null;
+                    const costMatch = featureName.match(/\((\d+)\s+charges?\)/i);
+                    if (costMatch) {
+                        chargeCost = parseInt(costMatch[1]);
+                    }
+                    
+                    // Extract action type
+                    let actionType = null;
+                    if (/\baction\b/i.test(featureDesc)) {
+                        actionType = 'Action';
+                    } else if (/\breaction\b/i.test(featureDesc)) {
+                        actionType = 'Reaction';
+                    } else if (/\bbonus action\b/i.test(featureDesc)) {
+                        actionType = 'Bonus Action';
+                    } else if (/\bpassive\b/i.test(featureName) || /\bpassive\b/i.test(featureDesc)) {
+                        actionType = 'Passive';
+                    }
+                    
+                    features.push({
+                        name: featureName,
+                        description: featureDesc,
+                        chargeCost: chargeCost,
+                        actionType: actionType
+                    });
+                }
+                
+                // Extract risk/drawback if present
+                let risk = null;
+                const riskMatch = content.match(/(?:risk|drawback|on a natural 1):\s*(.+?)(?=\n\*\*|\n\n|$)/is);
+                if (riskMatch) {
+                    risk = riskMatch[1].trim();
+                } else if (/natural 1/i.test(content)) {
+                    // Extract sentence containing "natural 1"
+                    const sentences = content.split(/[.!?]+/);
+                    for (const sentence of sentences) {
+                        if (/natural 1/i.test(sentence)) {
+                            risk = sentence.trim();
+                            break;
+                        }
+                    }
+                }
+                
+                parsed.magicItems.push({
+                    name: name,
+                    type: itemType,
+                    rarity: rarity,
+                    attunement: attunement,
+                    description: description,
+                    charges: charges,
+                    features: features,
+                    risk: risk
+                });
+            }
+        }
+        
+        function identifySections(lines, patterns) {
+            const sections = new Array(lines.length).fill(null);
+            let currentSection = null;
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                const headerMatch = line.match(patterns.headers);
+                
+                if (headerMatch) {
+                    const headerText = headerMatch[1].toLowerCase();
+                    
+                    // Identify section type from header
+                    if (/npc|character|people|cast/i.test(headerText)) {
+                        currentSection = 'npcs';
+                    } else if (/encounter|combat|battle|fight/i.test(headerText)) {
+                        currentSection = 'encounters';
+                    } else if (/revelation|secret|twist|plot|mystery/i.test(headerText)) {
+                        currentSection = 'revelations';
+                    } else if (/item|loot|treasure|equipment|gear/i.test(headerText)) {
+                        currentSection = 'items';
+                    } else if (/plot hook|adventure hook|quest|mission/i.test(headerText)) {
+                        currentSection = 'plotHooks';
+                    } else if (/mechanic|rule|table|roll|system/i.test(headerText)) {
+                        currentSection = 'mechanics';
+                    } else if (/lore|history|background|legend|myth/i.test(headerText)) {
+                        currentSection = 'lore';
+                    } else if (/note|session|summary|recap/i.test(headerText)) {
+                        currentSection = 'notes';
+                    }
+                }
+                
+                sections[i] = currentSection;
+            }
+            
+            return sections;
+        }
+        
+        function updateContext(line, context, patterns, sectionHint) {
+            // Check for headers
+            const headerMatch = line.match(patterns.headers);
+            if (headerMatch) {
+                context.lastHeader = headerMatch[1];
+                context.currentSection = sectionHint;
+                return;
+            }
+            
+            // Check for list items
+            context.inList = patterns.bullets.test(line) || patterns.numbered.test(line);
+            
+            // Track proper nouns for entity recognition
+            const properNouns = line.match(patterns.properNouns);
+            if (properNouns) {
+                context.recentProperNouns = properNouns.slice(0, 5); // Keep last 5
+            }
+        }
+        
+        function processParagraph(text, context, parsed, patterns) {
+            // Determine content type based on patterns and context
+            const scores = {
+                npc: 0,
+                encounter: 0,
+                revelation: 0,
+                item: 0,
+                plotHook: 0,
+                mechanic: 0,
+                lore: 0,
+                note: 0
+            };
+            
+            // Score based on indicators
+            if (patterns.npcIndicators.test(text)) scores.npc += 3;
+            if (patterns.encounterIndicators.test(text)) scores.encounter += 3;
+            if (patterns.revelationIndicators.test(text)) scores.revelation += 3;
+            if (patterns.itemIndicators.test(text)) scores.item += 3;
+            if (patterns.plotHookIndicators.test(text)) scores.plotHook += 3;
+            if (patterns.mechanicsIndicators.test(text)) scores.mechanic += 3;
+            if (patterns.loreIndicators.test(text)) scores.lore += 3;
+            
+            // Score based on context
+            if (context.currentSection) {
+                scores[context.currentSection] += 5;
+            }
+            
+            // Score based on structure
+            if (context.inList) {
+                scores.npc += 1;
+                scores.item += 1;
+            }
+            
+            // Check for table patterns (boost mechanics score)
+            if (patterns.tablePattern.test(text)) {
+                scores.mechanic += 2;
+            }
+            
+            // Find highest score
+            const maxScore = Math.max(...Object.values(scores));
+            const contentType = Object.keys(scores).find(k => scores[k] === maxScore);
+            
+            // Extract based on type
+            if (maxScore >= 3) { // Threshold for classification
+                switch (contentType) {
+                    case 'npc':
+                        extractNPC(text, parsed, patterns, context);
+                        break;
+                    case 'encounter':
+                        extractEncounter(text, parsed, patterns, context);
+                        break;
+                    case 'revelation':
+                        extractRevelation(text, parsed, patterns, context);
+                        break;
+                    case 'item':
+                        extractItem(text, parsed, patterns, context);
+                        break;
+                    case 'plotHook':
+                        extractPlotHook(text, parsed, patterns, context);
+                        break;
+                    case 'mechanic':
+                        extractMechanic(text, parsed, patterns, context);
+                        break;
+                    case 'lore':
+                        extractLore(text, parsed, patterns, context);
+                        break;
+                    default:
+                        parsed.notes.push(text);
+                }
+            } else {
+                parsed.notes.push(text);
+            }
+        }
+        
+        function extractNPC(text, parsed, patterns, context) {
+            // Try to find name
+            let name = null;
+            
+            // Method 1: Name at start with separator
+            const nameMatch = text.match(patterns.npcNames);
+            if (nameMatch) {
+                name = nameMatch[1];
+            }
+            
+            // Method 2: Bold text (often names)
+            if (!name) {
+                const boldMatches = [...text.matchAll(patterns.bold)];
+                if (boldMatches.length > 0) {
+                    name = boldMatches[0][1];
+                }
+            }
+            
+            // Method 3: First proper noun
+            if (!name && context.recentProperNouns.length > 0) {
+                name = context.recentProperNouns[0];
+            }
+            
+            // Method 4: Use header as name
+            if (!name && context.lastHeader) {
+                name = context.lastHeader;
+            }
+            
+            if (!name) {
+                name = "Unnamed NPC";
+            }
+            
+            // Extract role
+            let role = null;
+            const rolePatterns = [
+                /(?:is a|is an|works as|serves as)\s+([^,.]+)/i,
+                /(?:role|job|occupation|position):\s*([^,.]+)/i,
+                /\b(king|queen|guard|merchant|wizard|priest|captain|leader|boss|villain|ally)\b/i
+            ];
+            
+            for (const pattern of rolePatterns) {
+                const match = text.match(pattern);
+                if (match) {
+                    role = match[1].trim();
+                    break;
+                }
+            }
+            
+            // Extract secret/hidden info
+            let secret = null;
+            const secretMatch = text.match(/(?:secret|hidden|doesn't know|unaware|actually|really):\s*([^.]+)/i);
+            if (secretMatch) {
+                secret = secretMatch[1].trim();
+            } else if (/\b(secret|hidden|doesn't know|unaware)\b/i.test(text)) {
+                // Extract sentence containing secret indicator
+                const sentences = text.split(/[.!?]+/);
+                for (const sentence of sentences) {
+                    if (/\b(secret|hidden|doesn't know|unaware|actually|really)\b/i.test(sentence)) {
+                        secret = sentence.trim();
+                        break;
+                    }
+                }
+            }
+            
+            parsed.npcs.push({
+                name: name,
+                role: role,
+                description: text.replace(patterns.bold, '$1'),
+                secret: secret
+            });
+        }
+        
+        function extractEncounter(text, parsed, patterns, context) {
+            let name = context.lastHeader || "Encounter";
+            
+            // Try to extract name from bold text or start of text
+            const boldMatches = [...text.matchAll(patterns.bold)];
+            if (boldMatches.length > 0) {
+                name = boldMatches[0][1];
+            }
+            
+            // Extract CR
+            let cr = null;
+            const crMatch = text.match(patterns.crPattern);
+            if (crMatch) {
+                cr = crMatch[1];
+            }
+            
+            // Determine type
+            let type = 'Combat';
+            const typeMatch = text.match(patterns.encounterTypes);
+            if (typeMatch) {
+                type = typeMatch[1].charAt(0).toUpperCase() + typeMatch[1].slice(1).toLowerCase();
+            }
+            
+            parsed.encounters.push({
+                name: name,
+                type: type,
+                cr: cr,
+                description: text.replace(patterns.bold, '$1')
+            });
+        }
+        
+        function extractRevelation(text, parsed, patterns, context) {
+            let title = context.lastHeader || "Revelation";
+            
+            // Try to extract title from bold text
+            const boldMatches = [...text.matchAll(patterns.bold)];
+            if (boldMatches.length > 0) {
+                title = boldMatches[0][1];
+            }
+            
+            // Extract timing
+            let when = 'TBD';
+            const timingMatch = text.match(patterns.timingIndicators);
+            if (timingMatch) {
+                when = timingMatch[0];
+            }
+            
+            parsed.revelations.push({
+                title: title,
+                when: when,
+                description: text.replace(patterns.bold, '$1')
+            });
+        }
+        
+        function extractItem(text, parsed, patterns, context) {
+            let name = context.lastHeader || "Item";
+            
+            // Try to extract name from bold text or start
+            const boldMatches = [...text.matchAll(patterns.bold)];
+            if (boldMatches.length > 0) {
+                name = boldMatches[0][1];
+            } else {
+                // First few words might be the name
+                const words = text.split(/\s+/);
+                if (words.length > 0) {
+                    name = words.slice(0, Math.min(4, words.length)).join(' ');
+                }
+            }
+            
+            parsed.items.push({
+                name: name,
+                description: text.replace(patterns.bold, '$1')
+            });
+        }
+        
+        function extractPlotHook(text, parsed, patterns, context) {
+            let title = context.lastHeader || "Plot Hook";
+            
+            // Try to extract title from bold text
+            const boldMatches = [...text.matchAll(patterns.bold)];
+            if (boldMatches.length > 0) {
+                title = boldMatches[0][1];
+            }
+            
+            // Extract trigger/condition if present
+            let trigger = null;
+            const triggerMatch = text.match(/(?:if|when|after|trigger):\s*([^.]+)/i);
+            if (triggerMatch) {
+                trigger = triggerMatch[1].trim();
+            }
+            
+            parsed.plotHooks.push({
+                title: title,
+                trigger: trigger,
+                description: text.replace(patterns.bold, '$1')
+            });
+        }
+        
+        function extractMechanic(text, parsed, patterns, context) {
+            let name = context.lastHeader || "Mechanic";
+            
+            // Try to extract name from bold text
+            const boldMatches = [...text.matchAll(patterns.bold)];
+            if (boldMatches.length > 0) {
+                name = boldMatches[0][1];
+            }
+            
+            // Extract DC if present
+            let dc = null;
+            const dcMatch = text.match(/DC\s*(\d+)/i);
+            if (dcMatch) {
+                dc = dcMatch[1];
+            }
+            
+            // Check if it's a table/roll
+            let isTable = patterns.tablePattern.test(text) || /\bd\d+\b/i.test(text);
+            
+            parsed.mechanics.push({
+                name: name,
+                dc: dc,
+                isTable: isTable,
+                description: text.replace(patterns.bold, '$1')
+            });
+        }
+        
+        function extractLore(text, parsed, patterns, context) {
+            let title = context.lastHeader || "Lore";
+            
+            // Try to extract title from bold text
+            const boldMatches = [...text.matchAll(patterns.bold)];
+            if (boldMatches.length > 0) {
+                title = boldMatches[0][1];
+            }
+            
+            // Determine category (history, legend, etc.)
+            let category = 'General';
+            if (/\b(history|historical)\b/i.test(text)) {
+                category = 'History';
+            } else if (/\b(legend|myth|mythical)\b/i.test(text)) {
+                category = 'Legend';
+            } else if (/\b(origin|beginning|creation)\b/i.test(text)) {
+                category = 'Origin';
+            } else if (/\b(ancient|old|elder)\b/i.test(text)) {
+                category = 'Ancient';
+            }
+            
+            parsed.lore.push({
+                title: title,
+                category: category,
+                description: text.replace(patterns.bold, '$1')
+            });
+        }
+        
+        function extractEntitiesFromText(text, parsed, patterns) {
+            // Look for standalone proper nouns that might be NPCs
+            const sentences = text.split(/[.!?]+/);
+            
+            for (const sentence of sentences) {
+                const trimmed = sentence.trim();
+                if (!trimmed) continue;
+                
+                // Look for patterns like "Name is/was/will be..."
+                const entityPattern = /\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\s+(is|was|will be|has|had|does|did|can|could|should|would)\b/g;
+                let match;
+                
+                while ((match = entityPattern.exec(trimmed)) !== null) {
+                    const potentialName = match[1];
+                    
+                    // Check if this looks like an NPC (has descriptive context)
+                    if (patterns.npcIndicators.test(trimmed) || 
+                        patterns.descriptions.test(trimmed) ||
+                        patterns.motivations.test(trimmed)) {
+                        
+                        // Check if we already have this NPC
+                        const exists = parsed.npcs.some(npc => 
+                            npc.name.toLowerCase().includes(potentialName.toLowerCase())
+                        );
+                        
+                        if (!exists) {
+                            parsed.npcs.push({
+                                name: potentialName,
+                                role: null,
+                                description: trimmed,
+                                secret: null
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        
+        function deduplicateByName(items, nameField = 'name') {
+            const seen = new Map();
+            
+            for (const item of items) {
+                const key = item[nameField].toLowerCase().trim();
+                
+                if (seen.has(key)) {
+                    // Merge descriptions if both exist
+                    const existing = seen.get(key);
+                    if (item.description && existing.description !== item.description) {
+                        existing.description += ' ' + item.description;
+                    }
+                    // Merge other fields
+                    for (const field in item) {
+                        if (!existing[field] && item[field]) {
+                            existing[field] = item[field];
+                        }
+                    }
+                } else {
+                    seen.set(key, item);
+                }
+            }
+            
+            return Array.from(seen.values());
         }
 
         function displayParsedContent(parsed) {
@@ -809,6 +1338,73 @@
                 html += '</div>';
             }
             
+            // Magic Items
+            if (parsed.magicItems.length > 0) {
+                html += '<div class="parsed-section">';
+                html += `<h4>✨ Magic Items (${parsed.magicItems.length} found)</h4>`;
+                parsed.magicItems.forEach(item => {
+                    html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(212, 160, 23, 0.2); border: 1px solid var(--nipple-gold); border-radius: 5px;">`;
+                    html += `<strong>${item.name}</strong>`;
+                    html += ` <span style="background: var(--nipple-gold); color: var(--nipple-dark); padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.75rem;">${item.rarity.toUpperCase()}</span>`;
+                    if (item.attunement) {
+                        const attunementText = item.attunement === true ? 'Attunement' : `Attunement: ${item.attunement}`;
+                        html += ` <span style="background: var(--nipple-teal); color: white; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.75rem;">${attunementText}</span>`;
+                    }
+                    if (item.charges) {
+                        html += `<br><small>⚡ ${item.charges.max} charges (${item.charges.recharge}${item.charges.timing ? ' at ' + item.charges.timing : ''})</small>`;
+                    }
+                    if (item.description) html += `<br><small>${item.description.substring(0, 100)}${item.description.length > 100 ? '...' : ''}</small>`;
+                    if (item.features && item.features.length > 0) {
+                        html += `<br><small style="color: var(--nipple-gold);">🎯 ${item.features.length} features</small>`;
+                    }
+                    html += `</div>`;
+                });
+                html += '</div>';
+            }
+            
+            // Plot Hooks
+            if (parsed.plotHooks.length > 0) {
+                html += '<div class="parsed-section">';
+                html += `<h4>Plot Hooks (${parsed.plotHooks.length} found)</h4>`;
+                parsed.plotHooks.forEach(hook => {
+                    html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">`;
+                    html += `<strong>${hook.title}</strong>`;
+                    if (hook.trigger) html += ` - <em>Trigger: ${hook.trigger}</em>`;
+                    if (hook.description) html += `<br><small>${hook.description.substring(0, 100)}${hook.description.length > 100 ? '...' : ''}</small>`;
+                    html += `</div>`;
+                });
+                html += '</div>';
+            }
+            
+            // Mechanics
+            if (parsed.mechanics.length > 0) {
+                html += '<div class="parsed-section">';
+                html += `<h4>Mechanics (${parsed.mechanics.length} found)</h4>`;
+                parsed.mechanics.forEach(mech => {
+                    html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">`;
+                    html += `<strong>${mech.name}</strong>`;
+                    if (mech.dc) html += ` - DC ${mech.dc}`;
+                    if (mech.isTable) html += ` <span style="background: var(--nipple-gold); color: var(--nipple-dark); padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.8rem;">TABLE</span>`;
+                    if (mech.description) html += `<br><small>${mech.description.substring(0, 100)}${mech.description.length > 100 ? '...' : ''}</small>`;
+                    html += `</div>`;
+                });
+                html += '</div>';
+            }
+            
+            // Lore
+            if (parsed.lore.length > 0) {
+                html += '<div class="parsed-section">';
+                html += `<h4>Lore (${parsed.lore.length} found)</h4>`;
+                parsed.lore.forEach(loreItem => {
+                    html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">`;
+                    html += `<strong>${loreItem.title}</strong>`;
+                    if (loreItem.category !== 'General') html += ` - <em>${loreItem.category}</em>`;
+                    if (loreItem.description) html += `<br><small>${loreItem.description.substring(0, 100)}${loreItem.description.length > 100 ? '...' : ''}</small>`;
+                    html += `</div>`;
+                });
+                html += '</div>';
+            }
+            
             // Notes
             if (parsed.notes.length > 0) {
                 html += '<div class="parsed-section">';
@@ -851,6 +1447,34 @@
                 html += `<div class="import-option">
                     <input type="checkbox" id="import-items" checked>
                     <label for="import-items">Import ${parsed.items.length} Items</label>
+                </div>`;
+            }
+            
+            if (parsed.magicItems.length > 0) {
+                html += `<div class="import-option">
+                    <input type="checkbox" id="import-magicitems" checked>
+                    <label for="import-magicitems">✨ Import ${parsed.magicItems.length} Magic Items</label>
+                </div>`;
+            }
+            
+            if (parsed.plotHooks.length > 0) {
+                html += `<div class="import-option">
+                    <input type="checkbox" id="import-plothooks" checked>
+                    <label for="import-plothooks">Import ${parsed.plotHooks.length} Plot Hooks</label>
+                </div>`;
+            }
+            
+            if (parsed.mechanics.length > 0) {
+                html += `<div class="import-option">
+                    <input type="checkbox" id="import-mechanics" checked>
+                    <label for="import-mechanics">Import ${parsed.mechanics.length} Mechanics</label>
+                </div>`;
+            }
+            
+            if (parsed.lore.length > 0) {
+                html += `<div class="import-option">
+                    <input type="checkbox" id="import-lore" checked>
+                    <label for="import-lore">Import ${parsed.lore.length} Lore</label>
                 </div>`;
             }
             
@@ -900,6 +1524,34 @@
                 if (!campaignData.items) campaignData.items = [];
                 campaignData.items.push(...parsedDocument.items);
                 imported.push(`${parsedDocument.items.length} Items`);
+            }
+            
+            // Import Magic Items
+            if (document.getElementById('import-magicitems')?.checked) {
+                if (!campaignData.magicItems) campaignData.magicItems = [];
+                campaignData.magicItems.push(...parsedDocument.magicItems);
+                imported.push(`${parsedDocument.magicItems.length} Magic Items`);
+            }
+            
+            // Import Plot Hooks
+            if (document.getElementById('import-plothooks')?.checked) {
+                if (!campaignData.plotHooks) campaignData.plotHooks = [];
+                campaignData.plotHooks.push(...parsedDocument.plotHooks);
+                imported.push(`${parsedDocument.plotHooks.length} Plot Hooks`);
+            }
+            
+            // Import Mechanics
+            if (document.getElementById('import-mechanics')?.checked) {
+                if (!campaignData.mechanics) campaignData.mechanics = [];
+                campaignData.mechanics.push(...parsedDocument.mechanics);
+                imported.push(`${parsedDocument.mechanics.length} Mechanics`);
+            }
+            
+            // Import Lore
+            if (document.getElementById('import-lore')?.checked) {
+                if (!campaignData.lore) campaignData.lore = [];
+                campaignData.lore.push(...parsedDocument.lore);
+                imported.push(`${parsedDocument.lore.length} Lore`);
             }
             
             // Import Notes

@@ -902,3 +902,418 @@
     </div>
 
     <script>
+        // Load campaign data from JSON and initialize
+        let campaignData = {};
+        
+        fetch('campaign-data.json')
+            .then(response => response.json())
+            .then(data => {
+                campaignData = data;
+                init();
+            })
+            .catch(err => {
+                console.log('Using default data');
+                campaignData = {
+                    overview: { setting: "FeySpace", theme: "Corporate satire meets cosmic horror", currentLevel: 2, currentAct: 1 },
+                    acts: [], playerCharacters: [], npcs: [], revelations: [], preparedEncounters: [],
+                    quests: [], factions: [], locations: [], loot: [], timeline: [], encounterTables: {},
+                    quickReference: [], dmReference: []
+                };
+                init();
+            });
+        
+        function init() {
+            loadFromLocalStorage();
+            populateContent();
+            startSessionTimer();
+            updateStatusBar();
+        }
+        
+        let sessionStartTime = Date.now();
+        let diceHistory = [];
+        let combatants = [];
+        let currentTurn = 0;
+        let combatActive = false;
+        let parsedDocument = null;
+        
+        const prepTemplates = {
+            session: `# Session [Number] - [Title]\n\n## Summary\nWhat happened last time...\n\n## Scene 1: [Name]\n**Read Aloud:** \n**GM Notes:** \n**Checks:** \n\n## NPCs\n**Name** - Role\n- Description\n- Secret: \n\n## Encounters\n**Name** - CR X\n- Type: Combat/Social/Puzzle\n\n## Loot\n- Item (value)`,
+            npc: `# NPC: [Name]\n**Role:** \n**Description:** \n**Personality:** \n**Goals:** \n**Secret:** \n**Catchphrase:** `,
+            dungeon: `# Dungeon: [Name]\n\n## Room 1: [Entry]\n**Read Aloud:** \n**Contents:** \n**Exits:** \n**Treasure:** \n\n## Room 2: [Name]\n**Read Aloud:** \n**Contents:** \n**Exits:** `,
+            encounter: `# Encounter: [Name]\n**Type:** Combat/Social/Puzzle\n**CR:** \n**Description:** \n\n## Setup\n**Location:** \n**Trigger:** \n\n## Enemies/NPCs\n- **Name** (CR X): HP, AC, Special\n\n## Tactics\n**Round 1:** \n**If losing:** \n**Victory:** \n**Defeat:** `
+        };
+        
+        const npcNames = {
+            first: ['Zara', 'Kael', 'Finn', 'Nova', 'Rex', 'Luna', 'Ash', 'Sage', 'River', 'Storm'],
+            last: ['Voss', 'Drake', 'Stone', 'Frost', 'Blaze', 'Shadow', 'Swift', 'Bright', 'Dark', 'Star']
+        };
+        
+        function startSessionTimer() {
+            setInterval(() => {
+                const elapsed = Date.now() - sessionStartTime;
+                const minutes = Math.floor(elapsed / 60000);
+                const seconds = Math.floor((elapsed % 60000) / 1000);
+                document.getElementById('session-timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+        
+        function updateStatusBar() {
+            document.getElementById('status-act').textContent = campaignData.overview?.currentAct || 1;
+            document.getElementById('status-level').textContent = campaignData.overview?.currentLevel || 2;
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function toggleNewDMMode() {
+            document.body.classList.toggle('new-dm-mode');
+            showToast(document.body.classList.contains('new-dm-mode') ? 'New DM Mode: ON' : 'New DM Mode: OFF');
+        }
+        
+        function quickRoll(name, dice) {
+            const sides = parseInt(dice.replace('d', ''));
+            const result = Math.floor(Math.random() * sides) + 1;
+            showToast(`${name}: ${result}`);
+        }
+        
+        function randomNPC() {
+            const first = npcNames.first[Math.floor(Math.random() * npcNames.first.length)];
+            const last = npcNames.last[Math.floor(Math.random() * npcNames.last.length)];
+            showToast(`Random NPC: ${first} ${last}`);
+        }
+        
+        function quickNote() {
+            const note = prompt('Quick note:');
+            if (note) {
+                const notes = document.getElementById('session-notes');
+                notes.value += (notes.value ? '\n\n' : '') + `[${new Date().toLocaleTimeString()}] ${note}`;
+                showToast('Note added!');
+            }
+        }
+        
+        function startBreakTimer() {
+            const minutes = prompt('Break duration in minutes:', '10');
+            if (minutes) showToast(`Break timer: ${minutes} minutes`);
+        }
+        
+        function generateGTSCEncounter() {
+            if (campaignData.encounterTables?.gtscRiding) {
+                const table = campaignData.encounterTables.gtscRiding;
+                const result = table[Math.floor(Math.random() * table.length)];
+                alert(`🐱 GTSC Riding Event\n\n${result.name}\n\n${result.description}`);
+            } else {
+                showToast('No GTSC encounter table found!');
+            }
+        }
+        
+        function generateStationEvent() {
+            if (campaignData.encounterTables?.stationEvents) {
+                const table = campaignData.encounterTables.stationEvents;
+                const result = table[Math.floor(Math.random() * table.length)];
+                alert(`🚉 Station Event\n\n${result.name}\n\n${result.description}`);
+            } else {
+                showToast('No station event table found!');
+            }
+        }
+        
+        function generateFeyspaceWeird() {
+            if (campaignData.encounterTables?.feyspaceWeird) {
+                const table = campaignData.encounterTables.feyspaceWeird;
+                const result = table[Math.floor(Math.random() * table.length)];
+                alert(`✨ FeySpace Weirdness\n\n${result.name}\n\n${result.description}`);
+            } else {
+                showToast('No FeySpace weird table found!');
+            }
+        }
+        
+        function openTemplateModal() {
+            document.getElementById('template-modal').classList.add('active');
+        }
+        
+        function closeTemplateModal() {
+            document.getElementById('template-modal').classList.remove('active');
+        }
+        
+        function insertTemplate(type) {
+            document.getElementById('session-notes').value = prepTemplates[type];
+            closeTemplateModal();
+            showToast('Template inserted!');
+        }
+        
+        function openUploadModal() {
+            document.getElementById('upload-modal').classList.add('active');
+        }
+        
+        function closeUploadModal() {
+            document.getElementById('upload-modal').classList.remove('active');
+        }
+        
+        async function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            showToast('Processing document...');
+            const fileName = file.name.toLowerCase();
+            let content = '';
+            
+            try {
+                if (fileName.endsWith('.docx')) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const result = await mammoth.extractRawText({ arrayBuffer });
+                    content = result.value;
+                } else {
+                    content = await file.text();
+                }
+                
+                showToast('Document parsed! Check the preview.');
+                document.getElementById('parsed-preview').innerHTML = `<div class="alert success">✅ Document loaded successfully! ${content.length} characters.</div><p>Import functionality coming soon...</p>`;
+            } catch (error) {
+                showToast('Error processing document');
+            }
+        }
+        
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            if (tabName === 'dashboard') updateDashboard();
+        }
+        
+        function updateDashboard() {
+            // Active Quest
+            const activeQuestDiv = document.getElementById('active-quest-summary');
+            if (campaignData.quests?.length > 0) {
+                const quest = campaignData.quests.find(q => q.status === 'active');
+                if (quest) {
+                    activeQuestDiv.innerHTML = `<h4 style="color: var(--nipple-gold);">${quest.title}</h4><p>${quest.giver || 'Unknown'}</p>`;
+                } else {
+                    activeQuestDiv.innerHTML = '<p>No active quests</p>';
+                }
+            } else {
+                activeQuestDiv.innerHTML = '<p>No quests yet</p>';
+            }
+            
+            // Party Status
+            const partyDiv = document.getElementById('party-status-quick');
+            if (campaignData.playerCharacters?.length > 0) {
+                partyDiv.innerHTML = campaignData.playerCharacters.map(pc => 
+                    `<div style="padding: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px; margin-bottom: 0.5rem;">
+                        <strong>${pc.name}</strong> - ${pc.class} ${pc.level}<br>
+                        HP: ${pc.hp} | AC: ${pc.ac}
+                    </div>`
+                ).join('');
+            } else {
+                partyDiv.innerHTML = '<p>No characters yet</p>';
+            }
+            
+            // Next Event
+            const nextEventDiv = document.getElementById('next-event');
+            if (campaignData.timeline?.length > 0) {
+                const future = campaignData.timeline.filter(e => e.date.includes('planned'));
+                if (future.length > 0) {
+                    nextEventDiv.innerHTML = `<p><strong>${future[0].date}</strong><br>${future[0].event}</p>`;
+                } else {
+                    nextEventDiv.innerHTML = '<p>No planned events</p>';
+                }
+            } else {
+                nextEventDiv.innerHTML = '<p>No timeline yet</p>';
+            }
+            
+            // Quick Reference
+            const quickRefDiv = document.getElementById('quick-ref-dashboard');
+            if (campaignData.quickReference?.length > 0) {
+                quickRefDiv.innerHTML = campaignData.quickReference.slice(0, 3).map(ref =>
+                    `<div style="padding: 0.5rem; background: rgba(212, 160, 23, 0.1); border-radius: 5px; margin-bottom: 0.5rem;">
+                        <strong>${ref.title}</strong><br>
+                        <small>${ref.content}</small>
+                    </div>`
+                ).join('');
+            } else {
+                quickRefDiv.innerHTML = '<p>No quick reference items</p>';
+            }
+        }
+        
+        function populateContent() {
+            // Campaign Info
+            if (campaignData.overview) {
+                document.getElementById('campaign-info').innerHTML = `
+                    <p><strong>Setting:</strong> ${campaignData.overview.setting}</p>
+                    <p><strong>Theme:</strong> ${campaignData.overview.theme}</p>
+                    <p><strong>Current Level:</strong> ${campaignData.overview.currentLevel}</p>
+                `;
+            }
+            
+            // Current Act
+            if (campaignData.acts?.length > 0) {
+                const act = campaignData.acts.find(a => a.id === campaignData.overview.currentAct);
+                if (act) {
+                    document.getElementById('current-act').innerHTML = `
+                        <div style="background: rgba(42, 127, 127, 0.2); border: 2px solid var(--nipple-teal); border-radius: 8px; padding: 1rem;">
+                            <h3>${act.name}</h3>
+                            <p><em>${act.tone}</em></p>
+                            <p><strong>Levels:</strong> ${act.levels}</p>
+                            <p>${act.description}</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // NPCs
+            if (campaignData.npcs?.length > 0) {
+                document.getElementById('npc-list').innerHTML = campaignData.npcs.map(npc => `
+                    <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
+                        <h3>${npc.name}</h3>
+                        ${npc.role ? `<p><strong>Role:</strong> ${npc.role}</p>` : ''}
+                        <p>${npc.description}</p>
+                        ${npc.secret ? `<p><em>Secret: ${npc.secret}</em></p>` : ''}
+                        ${npc.catchphrase ? `<p><strong>"${npc.catchphrase}"</strong></p>` : ''}
+                    </div>
+                `).join('');
+            }
+            
+            // Encounters
+            if (campaignData.preparedEncounters?.length > 0) {
+                document.getElementById('prepared-encounters').innerHTML = campaignData.preparedEncounters.map(enc => `
+                    <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
+                        <h3>${enc.name}</h3>
+                        <p><strong>Type:</strong> ${enc.type} ${enc.cr ? `| <strong>CR:</strong> ${enc.cr}` : ''}</p>
+                        <p>${enc.description}</p>
+                    </div>
+                `).join('');
+            }
+            
+            updateDashboard();
+        }
+        
+        function saveToLocalStorage() {
+            localStorage.setItem('nipple-campaign', JSON.stringify(campaignData));
+            document.getElementById('last-save').textContent = 'Just now';
+            showToast('Saved!');
+        }
+        
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('nipple-campaign');
+            if (saved) {
+                const savedData = JSON.parse(saved);
+                campaignData = {...campaignData, ...savedData};
+            }
+        }
+        
+        function exportData() {
+            const dataStr = JSON.stringify(campaignData, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'nipple-campaign-data.json';
+            link.click();
+            showToast('Campaign exported!');
+        }
+        
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    campaignData = JSON.parse(e.target.result);
+                    saveToLocalStorage();
+                    populateContent();
+                    showToast('Campaign imported!');
+                } catch (error) {
+                    showToast('Error importing data!');
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        function saveNotes() {
+            localStorage.setItem('nipple-notes', document.getElementById('session-notes').value);
+            showToast('Notes saved!');
+        }
+        
+        function viewSessionHistory() {
+            showToast('Session history feature coming soon!');
+        }
+        
+        // Dice roller functions
+        function rollDice(sides) {
+            const result = Math.floor(Math.random() * sides) + 1;
+            showToast(`d${sides}: ${result}`);
+            displayDiceResult(`1d${sides}`, [result], result);
+        }
+        
+        function rollCustomDice() {
+            const count = parseInt(document.getElementById('dice-count').value) || 1;
+            const sides = parseInt(document.getElementById('dice-sides').value) || 20;
+            const modifier = parseInt(document.getElementById('dice-modifier').value) || 0;
+            
+            const rolls = [];
+            let total = 0;
+            for (let i = 0; i < count; i++) {
+                const roll = Math.floor(Math.random() * sides) + 1;
+                rolls.push(roll);
+                total += roll;
+            }
+            total += modifier;
+            
+            displayDiceResult(`${count}d${sides}${modifier !== 0 ? (modifier > 0 ? '+' : '') + modifier : ''}`, rolls, total);
+        }
+        
+        function displayDiceResult(dice, rolls, total) {
+            const resultsDiv = document.getElementById('dice-results');
+            const html = `
+                <div style="padding: 0.5rem; margin-bottom: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span><strong>${dice}</strong></span>
+                        <span style="color: var(--nipple-gold); font-size: 1.2rem; font-weight: bold;">${total}</span>
+                    </div>
+                    ${rolls.length > 1 ? `<div style="font-size: 0.85rem; color: var(--nipple-teal); margin-top: 0.25rem;">Rolls: [${rolls.join(', ')}]</div>` : ''}
+                </div>
+            `;
+            resultsDiv.innerHTML = html + resultsDiv.innerHTML;
+        }
+        
+        // Combat functions (simplified)
+        function addCombatant() { showToast('Combat tracker coming soon!'); }
+        function quickAddPCs() { showToast('Quick add PCs coming soon!'); }
+        function startCombat() { showToast('Combat tracker coming soon!'); }
+        function nextTurn() { showToast('Combat tracker coming soon!'); }
+        function clearCombat() { showToast('Combat tracker coming soon!'); }
+        
+        // Character management (simplified)
+        function addPlayerCharacter() { showToast('Character management coming soon!'); }
+        function addQuest() { showToast('Quest management coming soon!'); }
+        function addFaction() { showToast('Faction management coming soon!'); }
+        function addLocation() { showToast('Location management coming soon!'); }
+        function addLoot() { showToast('Loot management coming soon!'); }
+        function addTimelineEvent() { showToast('Timeline management coming soon!'); }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'd':
+                        e.preventDefault();
+                        rollDice(20);
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        quickNote();
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        saveToLocalStorage();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -56,15 +56,15 @@ class IntelligentParser {
         };
         
         this.sectionKeywords = {
-            npcs: ['npc', 'character', 'cast', 'dramatis personae', 'people', 'who'],
-            encounters: ['encounter', 'combat', 'battle', 'fight', 'conflict', 'challenge'],
-            revelations: ['revelation', 'secret', 'twist', 'mystery', 'plot', 'spoiler'],
-            items: ['item', 'loot', 'treasure', 'equipment', 'gear', 'magic item', 'reward'],
-            quests: ['quest', 'mission', 'task', 'objective', 'goal', 'adventure hook', 'plot hook'],
-            locations: ['location', 'place', 'area', 'room', 'map', 'dungeon', 'setting'],
-            factions: ['faction', 'organization', 'group', 'guild', 'order'],
-            mechanics: ['mechanic', 'rule', 'table', 'system', 'homebrew'],
-            lore: ['lore', 'history', 'background', 'legend', 'story', 'world']
+            npcs: ['npc', 'character', 'cast', 'dramatis personae', 'people', 'who', 'player character'],
+            encounters: ['encounter', 'combat', 'battle', 'fight', 'conflict', 'challenge', 'prepared encounter', 'random table'],
+            revelations: ['revelation', 'secret', 'twist', 'mystery', 'plot', 'spoiler', 'secrets &'],
+            items: ['item', 'loot', 'treasure', 'equipment', 'gear', 'magic item', 'reward', 'party resources', 'cargo'],
+            quests: ['quest', 'mission', 'task', 'objective', 'goal', 'adventure hook', 'plot hook', 'timeline', 'event'],
+            locations: ['location', 'place', 'area', 'room', 'map', 'dungeon', 'setting', 'ship'],
+            factions: ['faction', 'organization', 'group', 'guild', 'order', 'reputation'],
+            mechanics: ['mechanic', 'rule', 'table', 'system', 'homebrew', 'quick reference', 'dm reference', 'reminder'],
+            lore: ['lore', 'history', 'background', 'legend', 'story', 'world', 'campaign overview', 'setting', 'act']
         };
     }
     

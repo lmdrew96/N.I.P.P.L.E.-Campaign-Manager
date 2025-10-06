@@ -1060,7 +1060,9 @@
             const file = event.target.files[0];
             if (!file) return;
             
-            showToast('Processing document...');
+            const status = document.getElementById('parse-status');
+            status.innerHTML = '<div class="status-processing">Processing document...</div>';
+            
             const fileName = file.name.toLowerCase();
             let content = '';
             
@@ -1069,15 +1071,191 @@
                     const arrayBuffer = await file.arrayBuffer();
                     const result = await mammoth.extractRawText({ arrayBuffer });
                     content = result.value;
-                } else {
+                } else if (fileName.endsWith('.txt') || fileName.endsWith('.md')) {
                     content = await file.text();
+                } else {
+                    throw new Error('Unsupported file type');
                 }
                 
-                showToast('Document parsed! Check the preview.');
-                document.getElementById('parsed-preview').innerHTML = `<div class="alert success">✅ Document loaded successfully! ${content.length} characters.</div><p>Import functionality coming soon...</p>`;
+                // Use the intelligent parser
+                const parser = new IntelligentParser();
+                parsedDocument = parser.parse(content);
+                displayParsedContent(parsedDocument);
+                
             } catch (error) {
-                showToast('Error processing document');
+                status.innerHTML = `<div style="color: var(--nipple-red);">Error: ${error.message}</div>`;
             }
+        }
+        
+        function displayParsedContent(parsed) {
+            const preview = document.getElementById('parsed-preview');
+            
+            let html = '<div class="import-wizard">';
+            
+            // Show confidence feedback
+            const confidence = parsed.confidence;
+            if (confidence > 0.7) {
+                html += '<div class="alert success">✅ High confidence parse! Found clear sections.</div>';
+            } else if (confidence > 0.4) {
+                html += '<div class="alert warning">⚠️ Medium confidence. Consider using headers like "NPCs:", "Encounters:", etc.</div>';
+            } else {
+                html += '<div class="alert info">ℹ️ Low confidence. Try our templates for better results! <button onclick="openTemplateModal()" class="small gold">View Templates</button></div>';
+            }
+            
+            // Show warnings if any
+            if (parsed.warnings && parsed.warnings.length > 0) {
+                parsed.warnings.forEach(warning => {
+                    html += `<div class="alert warning">⚠️ ${warning}</div>`;
+                });
+            }
+            
+            // Show summary
+            html += '<div class="import-summary"><h3>We found:</h3>';
+            if (parsed.npcs.length > 0) html += `<div class="found-item">👥 ${parsed.npcs.length} NPCs</div>`;
+            if (parsed.encounters.length > 0) html += `<div class="found-item">⚔️ ${parsed.encounters.length} Encounters</div>`;
+            if (parsed.revelations.length > 0) html += `<div class="found-item">🔮 ${parsed.revelations.length} Revelations</div>`;
+            if (parsed.items.length > 0) html += `<div class="found-item">💎 ${parsed.items.length} Items</div>`;
+            if (parsed.quests.length > 0) html += `<div class="found-item">🎯 ${parsed.quests.length} Quests</div>`;
+            if (parsed.locations.length > 0) html += `<div class="found-item">📍 ${parsed.locations.length} Locations</div>`;
+            if (parsed.factions.length > 0) html += `<div class="found-item">🏛️ ${parsed.factions.length} Factions</div>`;
+            if (parsed.plotHooks.length > 0) html += `<div class="found-item">🎣 ${parsed.plotHooks.length} Plot Hooks</div>`;
+            if (parsed.mechanics.length > 0) html += `<div class="found-item">⚙️ ${parsed.mechanics.length} Mechanics</div>`;
+            if (parsed.lore.length > 0) html += `<div class="found-item">📜 ${parsed.lore.length} Lore Entries</div>`;
+            html += '</div>';
+            
+            // Import options
+            html += '<div class="import-options">';
+            if (parsed.npcs.length > 0) {
+                html += `<label class="import-option"><input type="checkbox" id="import-npcs" checked> Import ${parsed.npcs.length} NPCs</label>`;
+            }
+            if (parsed.encounters.length > 0) {
+                html += `<label class="import-option"><input type="checkbox" id="import-encounters" checked> Import ${parsed.encounters.length} Encounters</label>`;
+            }
+            if (parsed.revelations.length > 0) {
+                html += `<label class="import-option"><input type="checkbox" id="import-revelations" checked> Import ${parsed.revelations.length} Revelations</label>`;
+            }
+            if (parsed.items.length > 0) {
+                html += `<label class="import-option"><input type="checkbox" id="import-items" checked> Import ${parsed.items.length} Items</label>`;
+            }
+            if (parsed.quests.length > 0) {
+                html += `<label class="import-option"><input type="checkbox" id="import-quests" checked> Import ${parsed.quests.length} Quests</label>`;
+            }
+            if (parsed.locations.length > 0) {
+                html += `<label class="import-option"><input type="checkbox" id="import-locations" checked> Import ${parsed.locations.length} Locations</label>`;
+            }
+            if (parsed.factions.length > 0) {
+                html += `<label class="import-option"><input type="checkbox" id="import-factions" checked> Import ${parsed.factions.length} Factions</label>`;
+            }
+            if (parsed.plotHooks.length > 0) {
+                html += `<label class="import-option"><input type="checkbox" id="import-plothooks" checked> Import ${parsed.plotHooks.length} Plot Hooks</label>`;
+            }
+            if (parsed.mechanics.length > 0) {
+                html += `<label class="import-option"><input type="checkbox" id="import-mechanics" checked> Import ${parsed.mechanics.length} Mechanics</label>`;
+            }
+            if (parsed.lore.length > 0) {
+                html += `<label class="import-option"><input type="checkbox" id="import-lore" checked> Import ${parsed.lore.length} Lore</label>`;
+            }
+            if (parsed.notes.length > 0) {
+                html += `<label class="import-option"><input type="checkbox" id="import-notes" checked> Add to Session Notes</label>`;
+            }
+            html += '</div>';
+            
+            html += '<div class="parser-tip">💡 For best results, use headers like "NPCs:", "Encounters:", etc. <button onclick="openTemplateModal()" class="small">View Guide</button></div>';
+            
+            html += '</div>';
+            
+            html += '<div class="button-group">';
+            html += '<button class="gold" onclick="importParsedContent()">Import Selected</button>';
+            html += '<button onclick="closeUploadModal()">Cancel</button>';
+            html += '</div>';
+            
+            preview.innerHTML = html;
+            document.getElementById('parse-status').innerHTML = '';
+        }
+        
+        function importParsedContent() {
+            if (!parsedDocument) return;
+            
+            let imported = [];
+            
+            if (document.getElementById('import-npcs')?.checked && parsedDocument.npcs.length > 0) {
+                if (!campaignData.npcs) campaignData.npcs = [];
+                campaignData.npcs.push(...parsedDocument.npcs);
+                imported.push(`${parsedDocument.npcs.length} NPCs`);
+            }
+            
+            if (document.getElementById('import-encounters')?.checked && parsedDocument.encounters.length > 0) {
+                if (!campaignData.preparedEncounters) campaignData.preparedEncounters = [];
+                campaignData.preparedEncounters.push(...parsedDocument.encounters);
+                imported.push(`${parsedDocument.encounters.length} Encounters`);
+            }
+            
+            if (document.getElementById('import-revelations')?.checked && parsedDocument.revelations.length > 0) {
+                if (!campaignData.revelations) campaignData.revelations = [];
+                campaignData.revelations.push(...parsedDocument.revelations);
+                imported.push(`${parsedDocument.revelations.length} Revelations`);
+            }
+            
+            if (document.getElementById('import-items')?.checked && parsedDocument.items.length > 0) {
+                if (!campaignData.items) campaignData.items = [];
+                campaignData.items.push(...parsedDocument.items);
+                imported.push(`${parsedDocument.items.length} Items`);
+            }
+            
+            if (document.getElementById('import-quests')?.checked && parsedDocument.quests.length > 0) {
+                if (!campaignData.quests) campaignData.quests = [];
+                parsedDocument.quests.forEach(quest => {
+                    campaignData.quests.push({
+                        ...quest,
+                        status: 'active'
+                    });
+                });
+                imported.push(`${parsedDocument.quests.length} Quests`);
+            }
+            
+            if (document.getElementById('import-locations')?.checked && parsedDocument.locations.length > 0) {
+                if (!campaignData.locations) campaignData.locations = [];
+                campaignData.locations.push(...parsedDocument.locations);
+                imported.push(`${parsedDocument.locations.length} Locations`);
+            }
+            
+            if (document.getElementById('import-factions')?.checked && parsedDocument.factions.length > 0) {
+                if (!campaignData.factions) campaignData.factions = [];
+                campaignData.factions.push(...parsedDocument.factions);
+                imported.push(`${parsedDocument.factions.length} Factions`);
+            }
+            
+            if (document.getElementById('import-plothooks')?.checked && parsedDocument.plotHooks.length > 0) {
+                if (!campaignData.plotHooks) campaignData.plotHooks = [];
+                campaignData.plotHooks.push(...parsedDocument.plotHooks);
+                imported.push(`${parsedDocument.plotHooks.length} Plot Hooks`);
+            }
+            
+            if (document.getElementById('import-mechanics')?.checked && parsedDocument.mechanics.length > 0) {
+                if (!campaignData.mechanics) campaignData.mechanics = [];
+                campaignData.mechanics.push(...parsedDocument.mechanics);
+                imported.push(`${parsedDocument.mechanics.length} Mechanics`);
+            }
+            
+            if (document.getElementById('import-lore')?.checked && parsedDocument.lore.length > 0) {
+                if (!campaignData.lore) campaignData.lore = [];
+                campaignData.lore.push(...parsedDocument.lore);
+                imported.push(`${parsedDocument.lore.length} Lore`);
+            }
+            
+            if (document.getElementById('import-notes')?.checked && parsedDocument.notes.length > 0) {
+                const currentNotes = document.getElementById('session-notes').value;
+                const newNotes = parsedDocument.notes.join('\n\n');
+                document.getElementById('session-notes').value = 
+                    currentNotes + (currentNotes ? '\n\n--- Imported Notes ---\n\n' : '') + newNotes;
+                imported.push('Session Notes');
+            }
+            
+            saveToLocalStorage();
+            populateContent();
+            closeUploadModal();
+            
+            showToast(`✅ Imported: ${imported.join(', ')}`);
         }
         
         function showTab(tabName) {

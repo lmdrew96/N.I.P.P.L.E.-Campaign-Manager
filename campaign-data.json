@@ -1,0 +1,200 @@
+{
+  "overview": {
+    "setting": "FeySpace - Where the Fey Wild meets outer space",
+    "theme": "Corporate satire meets cosmic horror",
+    "currentLevel": 2,
+    "currentAct": 1
+  },
+  "acts": [
+    {
+      "id": 1,
+      "name": "Act 1: Regular Space",
+      "levels": "1-4",
+      "tone": "Corporate comedy, light stakes",
+      "description": "We're just doing our jobs. Establish crew dynamics, plant subtle seeds."
+    },
+    {
+      "id": 2,
+      "name": "Act 2: FeySpace Entry",
+      "levels": "5-8",
+      "tone": "Alice in Wonderland meets Spelljammer",
+      "description": "This isn't where we're supposed to be. First GTSC encounter, Kaelen's contact."
+    },
+    {
+      "id": 3,
+      "name": "Act 3: The Investigation",
+      "levels": "9-12",
+      "tone": "Corporate mystery becomes cosmic horror",
+      "description": "Something's very wrong here. Flow's oath breaks, truth about N.I.P.P.L.E."
+    },
+    {
+      "id": 4,
+      "name": "Act 4: The Resistance",
+      "levels": "13-16",
+      "tone": "Rebellion against overwhelming odds",
+      "description": "N.I.P.P.L.E. is a tool of cosmic evil. Tony begins transforming."
+    },
+    {
+      "id": 5,
+      "name": "Act 5: The Blooming",
+      "levels": "17-20",
+      "tone": "Epic heroism, cosmic showdown",
+      "description": "We go all the way. Tony's apotheosis, defeat TWiB, save FeySpace."
+    }
+  ],
+  "playerCharacters": [
+    {
+      "name": "Flow Jello",
+      "player": "Cam",
+      "class": "Paladin (Oath of Customer)",
+      "level": 2,
+      "hp": 20,
+      "ac": 16,
+      "job": "CLIT - Corporate Liaison",
+      "notes": "True believer in N.I.P.P.L.E., oath will break in Act 3"
+    },
+    {
+      "name": "Baz",
+      "player": "Logan",
+      "class": "Artificer",
+      "level": 2,
+      "hp": 18,
+      "ac": 15,
+      "job": "ASS - Applied Systems Specialist",
+      "notes": "152 years old, living archive of destroyed civilizations"
+    },
+    {
+      "name": "Tony (Ben Bingletonarius)",
+      "player": "Ben",
+      "class": "Bard",
+      "level": 2,
+      "hp": 16,
+      "ac": 14,
+      "job": "PEEN - Protective Engagement",
+      "notes": "Skeleton, secretly divine seed of TWiG"
+    },
+    {
+      "name": "Wisperincheeks",
+      "player": "Sophie",
+      "class": "Warlock (Lilith)",
+      "level": 2,
+      "hp": 17,
+      "ac": 13,
+      "job": "TOP - Trajectory Optimization",
+      "notes": "20,000 years old, telepathically controls ship"
+    }
+  ],
+  "npcs": [
+    {
+      "name": "Kaelen Voss",
+      "role": "Whistleblower",
+      "description": "Former VULVA, blacklisted, trying to expose N.I.P.P.L.E.",
+      "secret": "Doesn't know about cosmic significance",
+      "catchphrase": "Read the fine print. Actually read it."
+    },
+    {
+      "name": "Pip",
+      "role": "Ship AI",
+      "description": "Kestrel-11's helpful AI assistant",
+      "secret": "Logs everything to N.I.P.P.L.E. HQ"
+    },
+    {
+      "name": "Giant Talking Space Cats",
+      "role": "Transportation/Guides",
+      "description": "Shuttle to frigate-sized cosmic felines",
+      "secret": "One of the oldest species, witnesses to everything"
+    }
+  ],
+  "revelations": [
+    {
+      "title": "Tony's Divine Nature",
+      "when": "Act 3-4",
+      "description": "Tony is the son of That Which Is Good, carrying a divine seed"
+    },
+    {
+      "title": "N.I.P.P.L.E.'s True Purpose",
+      "when": "Act 3",
+      "description": "Company is strip-mining FeySpace magic for That Which Is Bad"
+    },
+    {
+      "title": "Flow's Oath Crisis",
+      "when": "Act 3",
+      "description": "The customer is always right. N.I.P.P.L.E. is the customer. Clients are the product."
+    },
+    {
+      "title": "Baz's Memory Archive",
+      "when": "Act 3",
+      "description": "Contains memories of every civilization N.I.P.P.L.E. destroyed"
+    }
+  ],
+  "preparedEncounters": [
+    {
+      "name": "First GTSC Meeting",
+      "type": "Social",
+      "cr": "N/A",
+      "description": "Can opener summons 1d6 cats, must have treats ready"
+    },
+    {
+      "name": "N.I.P.P.L.E. Security Team",
+      "type": "Combat",
+      "cr": "5",
+      "description": "4 PEEN officers trying to detain the crew"
+    },
+    {
+      "name": "Temporal Anomaly",
+      "type": "Puzzle",
+      "cr": "N/A",
+      "description": "Ship caught in time loop, must break cycle"
+    }
+  ],
+  "encounterTables": {
+    "gtscRiding": [
+      {"name": "The Zoomies", "description": "DC 15 DEX save or fall prone"},
+      {"name": "Sudden Nap Time", "description": "Cat stops and sleeps, DC 14 Persuasion to wake"},
+      {"name": "I Saw Something", "description": "Stares at nothing for 1d4 minutes"},
+      {"name": "Grooming Break", "description": "DC 13 DEX save or get slimed"},
+      {"name": "Red Dot Phenomena", "description": "Must chase mysterious light, 10-min detour"},
+      {"name": "Hairball Incident", "description": "DC 12 CON save or poisoned 10 min"},
+      {"name": "Perfectly Smooth Travel", "description": "Advantage on next skill check"}
+    ],
+    "stationEvents": [
+      {"name": "Cargo Mix-up", "description": "Wrong package delivered, contains something weird"},
+      {"name": "System Malfunction", "description": "Gravity fails in one section"},
+      {"name": "Corporate Inspector", "description": "Surprise compliance audit"},
+      {"name": "Angry Customer", "description": "Demands compensation for late delivery"},
+      {"name": "Pirates Docking", "description": "Suspicious ship requests emergency docking"}
+    ],
+    "feyspaceWeird": [
+      {"name": "Colors Taste Like Music", "description": "Synesthesia for 1 hour"},
+      {"name": "Gravity Points Wrong Way", "description": "Falls go sideways"},
+      {"name": "Everyone Speaks in Rhyme", "description": "Can't stop until scene ends"},
+      {"name": "Objects Remember Being Trees", "description": "Wooden items sprout leaves"},
+      {"name": "Time Hiccups", "description": "Random 6-second rewinds"}
+    ]
+  },
+  "dmReference": [
+    {
+      "title": "Tony's Transformation Signs",
+      "content": "Bones feel warm when doing good, phantom pain lessens with kindness, NPCs sense something strange"
+    },
+    {
+      "title": "Flow's Doubt Triggers",
+      "content": "Company harms innocents, contradictory policies, Kaelen's messages"
+    },
+    {
+      "title": "Baz's Memory Flashes",
+      "content": "Touches old tech and sees its history, dreams of places never been, four arms sort by age unconsciously"
+    },
+    {
+      "title": "GTSC Payment",
+      "content": "Premium treats (10gp), SpaceNip (20gp), Scritches (DC 12), Stories (DC 14)"
+    }
+  ],
+  "quickReference": [
+    {"title": "Can Opener", "content": "Summons 1d6 GTSCs in 1d4 rounds"},
+    {"title": "Here Kitty", "content": "Insulting to GTSCs, roll d10 for reaction"},
+    {"title": "FeySpace Magic", "content": "Wild, unpredictable, being strip-mined"},
+    {"title": "TWiG", "content": "That Which Is Good - Tony's true father"},
+    {"title": "TWiB", "content": "That Which Is Bad - Controls N.I.P.P.L.E."}
+  ]
+}

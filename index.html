@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N.I.P.P.L.E. FeySpace Campaign Tracker</title>
+    <style>
+        :root {
+            --nipple-blue: #1a3a52;
+            --nipple-teal: #2a7f7f;
+            --nipple-gold: #d4a017;
+            --nipple-dark: #0d1f2d;
+            --nipple-light: #e8f4f8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--nipple-dark) 0%, var(--nipple-blue) 100%);
+            color: var(--nipple-light);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(13, 31, 45, 0.9);
+            padding: 1rem;
+            border-bottom: 3px solid var(--nipple-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .header h1 {
+            color: var(--nipple-gold);
+            font-size: 2rem;
+            text-shadow: 0 0 10px rgba(212, 160, 23, 0.3);
+        }
+
+        .tagline {
+            color: var(--nipple-teal);
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        .editor-toggle {
+            background: var(--nipple-gold);
+            color: var(--nipple-dark);
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .editor-toggle:hover {
+            background: #e4b027;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(26, 58, 82, 0.8);
+            padding: 0.5rem;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            background: rgba(42, 127, 127, 0.3);
+            border: 2px solid var(--nipple-teal);
+            color: var(--nipple-light);
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            background: rgba(42, 127, 127, 0.5);
+        }
+
+        .tab-button.active {
+            background: var(--nipple-teal);
+            box-shadow: 0 0 10px rgba(42, 127, 127, 0.5);
+        }
+
+        .content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card {
+            background: rgba(26, 58, 82, 0.6);
+            border: 1px solid var(--nipple-teal);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card h2 {
+            color: var(--nipple-gold);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--nipple-teal);
+            padding-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card h3 {
+            color: var(--nipple-teal);
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .character-card {
+            background: rgba(42, 127, 127, 0.2);
+            border: 2px solid var(--nipple-teal);
+            border-radius: 8px;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .character-card h3 {
+            color: var(--nipple-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid rgba(42, 127, 127, 0.3);
+        }
+
+        button {
+            background: var(--nipple-teal);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0.25rem;
+        }
+
+        button:hover {
+            background: #3a8f8f;
+            box-shadow: 0 0 10px rgba(42, 127, 127, 0.5);
+        }
+
+        button.small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        button.danger {
+            background: #d44;
+        }
+
+        button.danger:hover {
+            background: #e55;
+        }
+
+        input, select, textarea {
+            background: rgba(13, 31, 45, 0.8);
+            color: var(--nipple-light);
+            border: 1px solid var(--nipple-teal);
+            padding: 0.5rem;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .combat-tracker {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 2fr;
+            gap: 0.5rem;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+
+        .dice-roller {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .dice-button {
+            background: rgba(212, 160, 23, 0.2);
+            border: 2px solid var(--nipple-gold);
+            color: var(--nipple-gold);
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+        }
+
+        .dice-result {
+            background: rgba(212, 160, 23, 0.1);
+            border: 1px solid var(--nipple-gold);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.5rem;
+            color: var(--nipple-gold);
+        }
+
+        .notes-area {
+            background: rgba(13, 31, 45, 0.8);
+            border: 1px solid var(--nipple-teal);
+            padding: 1rem;
+            border-radius: 5px;
+            min-height: 200px;
+            white-space: pre-wrap;
+        }
+
+        .act-progress {
+            background: rgba(42, 127, 127, 0.2);
+            border: 2px solid var(--nipple-teal);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .revelation-item {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            background: rgba(13, 31, 45, 0.6);
+            border-left: 3px solid var(--nipple-gold);
+            position: relative;
+        }
+
+        .encounter-table {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .encounter-table td {
+            padding: 0.5rem;
+            border-bottom: 1px solid rgba(42, 127, 127, 0.3);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+        }
+
+        .status-active { background: var(--nipple-teal); }
+        .status-completed { background: #2a7f2a; }
+        .status-upcoming { background: #7f7f2a; }
+
+        .edit-controls {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            display: none;
+        }
+
+        .editor-mode .edit-controls {
+            display: block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--nipple-blue);
+            border: 2px solid var(--nipple-gold);
+            border-radius: 10px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h2 {
+            color: var(--nipple-gold);
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--nipple-teal);
+            margin-bottom: 0.25rem;
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .export-import {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .content { padding: 1rem; }
+            .tabs { flex-wrap: wrap; }
+            .combat-tracker { grid-template-columns: 1fr; }
+            .header { flex-direction: column; text-align: center; }
+            .header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>N.I.P.P.L.E. FeySpace Campaign</h1>
+            <div class="tagline">We Go All the Way</div>
+        </div>
+        <button class="editor-toggle" onclick="toggleEditor()">📝 Editor Mode</button>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-button active" onclick="showTab('overview')">Overview</button>
+        <button class="tab-button" onclick="showTab('characters')">Characters</button>
+        <button class="tab-button" onclick="showTab('storyline')">Storyline</button>
+        <button class="tab-button" onclick="showTab('combat')">Combat</button>
+        <button class="tab-button" onclick="showTab('encounters')">Encounters</button>
+        <button class="tab-button" onclick="showTab('dmnotes')">DM Notes</button>
+        <button class="tab-button" onclick="showTab('data')">Data Manager</button>
+    </div>
+
+    <div class="content">
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="card">
+                <h2>Campaign Overview</h2>
+                <div id="campaign-info"></div>
+            </div>
+            <div class="card">
+                <h2>Current Act</h2>
+                <div id="current-act"></div>
+            </div>
+            <div class="card">
+                <h2>Quick Reference 
+                    <button class="small" onclick="openQuickRefModal()" style="display: none;">+ Add</button>
+                </h2>
+                <div id="quick-ref"></div>
+            </div>
+        </div>
+
+        <!-- Characters Tab -->
+        <div id="characters" class="tab-content">
+            <div class="card">
+                <h2>Player Characters 
+                    <button class="small" onclick="openPCModal()" style="display: none;">+ Add PC</button>
+                </h2>
+                <div class="character-grid" id="pc-grid"></div>
+            </div>
+            <div class="card">
+                <h2>Important NPCs 
+                    <button class="small" onclick="openNPCModal()" style="display: none;">+ Add NPC</button>
+                </h2>
+                <div id="npc-list"></div>
+            </div>
+        </div>
+
+        <!-- Storyline Tab -->
+        <div id="storyline" class="tab-content">
+            <div class="card">
+                <h2>Act Progression</h2>
+                <div id="act-progression"></div>
+            </div>
+            <div class="card">
+                <h2>Key Revelations 
+                    <button class="small" onclick="openRevelationModal()" style="display: none;">+ Add</button>
+                </h2>
+                <div id="revelations"></div>
+            </div>
+        </div>
+
+        <!-- Combat Tab -->
+        <div id="combat" class="tab-content">
+            <div class="card">
+                <h2>Initiative Tracker</h2>
+                <button onclick="startCombat()">Start Combat</button>
+                <button onclick="clearCombat()">Clear</button>
+                <button onclick="nextTurn()">Next Turn</button>
+                <div id="initiative-list"></div>
+            </div>
+            <div class="card">
+                <h2>Dice Roller</h2>
+                <div class="dice-roller">
+                    <button class="dice-button" onclick="rollDice(4)">d4</button>
+                    <button class="dice-button" onclick="rollDice(6)">d6</button>
+                    <button class="dice-button" onclick="rollDice(8)">d8</button>
+                    <button class="dice-button" onclick="rollDice(10)">d10</button>
+                    <button class="dice-button" onclick="rollDice(12)">d12</button>
+                    <button class="dice-button" onclick="rollDice(20)">d20</button>
+                    <button class="dice-button" onclick="rollDice(100)">d100</button>
+                </div>
+                <div id="dice-result" class="dice-result">Ready to roll...</div>
+            </div>
+        </div>
+
+        <!-- Encounters Tab -->
+        <div id="encounters" class="tab-content">
+            <div class="card">
+                <h2>Encounter Tables</h2>
+                <button onclick="rollEncounter('riding')">Roll GTSC Riding</button>
+                <button onclick="rollEncounter('station')">Roll Station Event</button>
+                <button onclick="rollEncounter('feyspace')">Roll FeySpace</button>
+                <div id="encounter-result"></div>
+            </div>
+            <div class="card">
+                <h2>Prepared Encounters 
+                    <button class="small" onclick="openEncounterModal()" style="display: none;">+ Add</button>
+                </h2>
+                <div id="prepared-encounters"></div>
+            </div>
+        </div>
+
+        <!-- DM Notes Tab -->
+        <div id="dmnotes" class="tab-content">
+            <div class="card">
+                <h2>Session Notes</h2>
+                <textarea id="session-notes" rows="10" placeholder="Session notes..."></textarea>
+                <button onclick="saveNotes()">Save Notes</button>
+            </div>
+            <div class="card">
+                <h2>DM Quick Reference 
+                    <button class="small" onclick="openDMRefModal()" style="display: none;">+ Add</button>
+                </h2>
+                <div id="dm-quick-ref"></div>
+            </div>
+        </div>
+
+        <!-- Data Manager Tab -->
+        <div id="data" class="tab-content">
+            <div class="card">
+                <h2>Campaign Data Manager</h2>
+                <p>Export your campaign data to save it, or import previously saved data.</p>
+                <div class="export-import">
+                    <button onclick="exportData()">📥 Export Campaign Data</button>
+                    <button onclick="document.getElementById('import-file').click()">📤 Import Campaign Data</button>
+                    <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importData(event)">
+                </div>
+            </div>
+            <div class="card">
+                <h2>Current Act Settings</h2>
+                <div class="form-group">
+                    <label>Current Act:</label>
+                    <select id="current-act-select" onchange="updateCurrentAct(this.value)">
+                        <option value="1">Act 1: Regular Space</option>
+                        <option value="2">Act 2: FeySpace Entry</option>
+                        <option value="3">Act 3: The Investigation</option>
+                        <option value="4">Act 4: The Resistance</option>
+                        <option value="5">Act 5: The Blooming</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Party Level:</label>
+                    <input type="number" id="party-level" min="1" max="20" value="2" onchange="updatePartyLevel(this.value)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Add/Edit</h2>
+            <div id="modal-body"></div>
+            <div class="button-group">
+                <button onclick="saveModalData()">Save</button>
+                <button onclick="closeModal()" class="danger">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default campaign data
+        let campaignData = {
+            overview: {
+                setting: "FeySpace - Where the Fey Wild meets outer space",
+                theme: "Corporate satire meets cosmic horror",
+                currentLevel: 2,
+                currentAct: 1
+            },
+            acts: [
+                {
+                    id: 1,
+                    name: "Act 1: Regular Space",
+                    levels: "1-4",
+                    tone: "Corporate comedy, light stakes",
+                    description: "We're just doing our jobs. Establish crew dynamics, plant subtle seeds."
+                },
+                {
+                    id: 2,
+                    name: "Act 2: FeySpace Entry",
+                    levels: "5-8",
+                    tone: "Alice in Wonderland meets Spelljammer",
+                    description: "This isn't where we're supposed to be."
+                },
+                {
+                    id: 3,
+                    name: "Act 3: The Investigation",
+                    levels: "9-12",
+                    tone: "Corporate mystery becomes cosmic horror",
+                    description: "Something's very wrong here."
+                },
+                {
+                    id: 4,
+                    name: "Act 4: The Resistance",
+                    levels: "13-16",
+                    tone: "Rebellion against overwhelming odds",
+                    description: "N.I.P.P.L.E. is a tool of cosmic evil."
+                },
+                {
+                    id: 5,
+                    name: "Act 5: The Blooming",
+                    levels: "17-20",
+                    tone: "Epic heroism, cosmic showdown",
+                    description: "We go all the way."
+                }
+            ],
+            playerCharacters: [],
+            npcs: [],
+            revelations: [],
+            preparedEncounters: [],
+            encounterTables: {
+                gtscRiding: [
+                    {name: "The Zoomies", description: "DC 15 DEX save or fall prone"},
+                    {name: "Sudden Nap Time", description: "Cat stops and sleeps"},
+                    {name: "Grooming Break", description: "DC 13 DEX or get slimed"}
+                ],
+                stationEvents: [],
+                feyspaceWeird: []
+            },
+            dmReference: [],
+            quickReference: []
+        };
+
+        let combatants = [];
+        let currentTurn = 0;
+        let editorMode = false;
+        let currentModal = null;
+        let editingIndex = -1;
+
+        // Initialize
+        function init() {
+            loadFromLocalStorage();
+            populateContent();
+            loadSavedData();
+        }
+
+        // Toggle editor mode
+        function toggleEditor() {
+            editorMode = !editorMode;
+            document.body.classList.toggle('editor-mode');
+            
+            // Show/hide edit buttons
+            const editButtons = document.querySelectorAll('.card h2 button.small, .edit-controls');
+            editButtons.forEach(btn => {
+                btn.style.display = editorMode ? 'inline-block' : 'none';
+            });
+            
+            // Update button text
+            document.querySelector('.editor-toggle').textContent = 
+                editorMode ? '👁️ View Mode' : '📝 Editor Mode';
+        }
+
+        // Modal functions
+        function openModal(title, type, data = null, index = -1) {
+            currentModal = type;
+            editingIndex = index;
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').innerHTML = getModalForm(type, data);
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            currentModal = null;
+            editingIndex = -1;
+        }
+
+        function getModalForm(type, data) {
+            switch(type) {
+                case 'pc':
+                    return `
+                        <div class="form-group">
+                            <label>Character Name:</label>
+                            <input type="text" id="modal-name" value="${data?.name || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Player Name:</label>
+                            <input type="text" id="modal-player" value="${data?.player || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Class:</label>
+                            <input type="text" id="modal-class" value="${data?.class || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Level:</label>
+                            <input type="number" id="modal-level" value="${data?.level || 2}">
+                        </div>
+                        <div class="form-group">
+                            <label>HP:</label>
+                            <input type="number" id="modal-hp" value="${data?.hp || 20}">
+                        </div>
+                        <div class="form-group">
+                            <label>AC:</label>
+                            <input type="number" id="modal-ac" value="${data?.ac || 10}">
+                        </div>
+                        <div class="form-group">
+                            <label>Job Title:</label>
+                            <input type="text" id="modal-job" value="${data?.job || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes:</label>
+                            <textarea id="modal-notes" rows="3">${data?.notes || ''}</textarea>
+                        </div>
+                    `;
+                case 'npc':
+                    return `
+                        <div class="form-group">
+                            <label>NPC Name:</label>
+                            <input type="text" id="modal-name" value="${data?.name || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Role:</label>
+                            <input type="text" id="modal-role" value="${data?.role || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Description:</label>
+                            <textarea id="modal-description" rows="3">${data?.description || ''}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Secret (DM Only):</label>
+                            <textarea id="modal-secret" rows="2">${data?.secret || ''}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Catchphrase:</label>
+                            <input type="text" id="modal-catchphrase" value="${data?.catchphrase || ''}">
+                        </div>
+                    `;
+                case 'revelation':
+                    return `
+                        <div class="form-group">
+                            <label>Revelation Title:</label>
+                            <input type="text" id="modal-title-field" value="${data?.title || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>When it Happens:</label>
+                            <input type="text" id="modal-when" value="${data?.when || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Description:</label>
+                            <textarea id="modal-description" rows="3">${data?.description || ''}</textarea>
+                        </div>
+                    `;
+                case 'encounter':
+                    return `
+                        <div class="form-group">
+                            <label>Encounter Name:</label>
+                            <input type="text" id="modal-name" value="${data?.name || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Type:</label>
+                            <select id="modal-type">
+                                <option value="Combat" ${data?.type === 'Combat' ? 'selected' : ''}>Combat</option>
+                                <option value="Social" ${data?.type === 'Social' ? 'selected' : ''}>Social</option>
+                                <option value="Puzzle" ${data?.type === 'Puzzle' ? 'selected' : ''}>Puzzle</option>
+                                <option value="Exploration" ${data?.type === 'Exploration' ? 'selected' : ''}>Exploration</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>CR/Difficulty:</label>
+                            <input type="text" id="modal-cr" value="${data?.cr || 'N/A'}">
+                        </div>
+                        <div class="form-group">
+                            <label>Description:</label>
+                            <textarea id="modal-description" rows="3">${data?.description || ''}</textarea>
+                        </div>
+                    `;
+                case 'dmref':
+                    return `
+                        <div class="form-group">
+                            <label>Reference Title:</label>
+                            <input type="text" id="modal-title-field" value="${data?.title || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Content:</label>
+                            <textarea id="modal-content" rows="4">${data?.content || ''}</textarea>
+                        </div>
+                    `;
+                case 'quickref':
+                    return `
+                        <div class="form-group">
+                            <label>Title:</label>
+                            <input type="text" id="modal-title-field" value="${data?.title || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Content:</label>
+                            <input type="text" id="modal-content" value="${data?.content || ''}">
+                        </div>
+                    `;
+            }
+        }
+
+        function saveModalData() {
+            let newData = {};
+            
+            switch(currentModal) {
+                case 'pc':
+                    newData = {
+                        name: document.getElementById('modal-name').value,
+                        player: document.getElementById('modal-player').value,
+                        class: document.getElementById('modal-class').value,
+                        level: parseInt(document.getElementById('modal-level').value),
+                        hp: parseInt(document.getElementById('modal-hp').value),
+                        ac: parseInt(document.getElementById('modal-ac').value),
+                        job: document.getElementById('modal-job').value,
+                        notes: document.getElementById('modal-notes').value
+                    };
+                    
+                    if (editingIndex >= 0) {
+                        campaignData.playerCharacters[editingIndex] = newData;
+                    } else {
+                        campaignData.playerCharacters.push(newData);
+                    }
+                    break;
+                    
+                case 'npc':
+                    newData = {
+                        name: document.getElementById('modal-name').value,
+                        role: document.getElementById('modal-role').value,
+                        description: document.getElementById('modal-description').value,
+                        secret: document.getElementById('modal-secret').value,
+                        catchphrase: document.getElementById('modal-catchphrase').value
+                    };
+                    
+                    if (editingIndex >= 0) {
+                        campaignData.npcs[editingIndex] = newData;
+                    } else {
+                        campaignData.npcs.push(newData);
+                    }
+                    break;
+                    
+                case 'revelation':
+                    newData = {
+                        title: document.getElementById('modal-title-field').value,
+                        when: document.getElementById('modal-when').value,
+                        description: document.getElementById('modal-description').value
+                    };
+                    
+                    if (editingIndex >= 0) {
+                        campaignData.revelations[editingIndex] = newData;
+                    } else {
+                        campaignData.revelations.push(newData);
+                    }
+                    break;
+                    
+                case 'encounter':
+                    newData = {
+                        name: document.getElementById('modal-name').value,
+                        type: document.getElementById('modal-type').value,
+                        cr: document.getElementById('modal-cr').value,
+                        description: document.getElementById('modal-description').value
+                    };
+                    
+                    if (editingIndex >= 0) {
+                        campaignData.preparedEncounters[editingIndex] = newData;
+                    } else {
+                        campaignData.preparedEncounters.push(newData);
+                    }
+                    break;
+                    
+                case 'dmref':
+                    newData = {
+                        title: document.getElementById('modal-title-field').value,
+                        content: document.getElementById('modal-content').value
+                    };
+                    
+                    if (editingIndex >= 0) {
+                        campaignData.dmReference[editingIndex] = newData;
+                    } else {
+                        campaignData.dmReference.push(newData);
+                    }
+                    break;
+                    
+                case 'quickref':
+                    newData = {
+                        title: document.getElementById('modal-title-field').value,
+                        content: document.getElementById('modal-content').value
+                    };
+                    
+                    if (editingIndex >= 0) {
+                        campaignData.quickReference[editingIndex] = newData;
+                    } else {
+                        campaignData.quickReference.push(newData);
+                    }
+                    break;
+            }
+            
+            saveToLocalStorage();
+            populateContent();
+            closeModal();
+        }
+
+        // Modal openers
+        function openPCModal(data = null, index = -1) {
+            openModal(data ? 'Edit Character' : 'Add Character', 'pc', data, index);
+        }
+
+        function openNPCModal(data = null, index = -1) {
+            openModal(data ? 'Edit NPC' : 'Add NPC', 'npc', data, index);
+        }
+
+        function openRevelationModal(data = null, index = -1) {
+            openModal(data ? 'Edit Revelation' : 'Add Revelation', 'revelation', data, index);
+        }
+
+        function openEncounterModal(data = null, index = -1) {
+            openModal(data ? 'Edit Encounter' : 'Add Encounter', 'encounter', data, index);
+        }
+
+        function openDMRefModal(data = null, index = -1) {
+            openModal(data ? 'Edit Reference' : 'Add Reference', 'dmref', data, index);
+        }
+
+        function openQuickRefModal(data = null, index = -1) {
+            openModal(data ? 'Edit Quick Ref' : 'Add Quick Reference', 'quickref', data, index);
+        }
+
+        // Delete functions
+        function deleteItem(type, index) {
+            if (!confirm('Are you sure you want to delete this?')) return;
+            
+            switch(type) {
+                case 'pc':
+                    campaignData.playerCharacters.splice(index, 1);
+                    break;
+                case 'npc':
+                    campaignData.npcs.splice(index, 1);
+                    break;
+                case 'revelation':
+                    campaignData.revelations.splice(index, 1);
+                    break;
+                case 'encounter':
+                    campaignData.preparedEncounters.splice(index, 1);
+                    break;
+                case 'dmref':
+                    campaignData.dmReference.splice(index, 1);
+                    break;
+                case 'quickref':
+                    campaignData.quickReference.splice(index, 1);
+                    break;
+            }
+            
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        // Update current act and level
+        function updateCurrentAct(value) {
+            campaignData.overview.currentAct = parseInt(value);
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        function updatePartyLevel(value) {
+            campaignData.overview.currentLevel = parseInt(value);
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        // Data management
+        function saveToLocalStorage() {
+            localStorage.setItem('nipple-campaign', JSON.stringify(campaignData));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('nipple-campaign');
+            if (saved) {
+                campaignData = JSON.parse(saved);
+            }
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(campaignData, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'nipple-campaign-data.json';
+            link.click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    campaignData = JSON.parse(e.target.result);
+                    saveToLocalStorage();
+                    populateContent();
+                    alert('Data imported successfully!');
+                } catch (error) {
+                    alert('Error importing data. Make sure it\'s a valid JSON file.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function populateContent() {
+            // Overview
+            document.getElementById('campaign-info').innerHTML = `
+                <p><strong>Setting:</strong> ${campaignData.overview.setting}</p>
+                <p><strong>Theme:</strong> ${campaignData.overview.theme}</p>
+                <p><strong>Current Level:</strong> ${campaignData.overview.currentLevel}</p>
+            `;
+
+            // Current Act
+            const act = campaignData.acts.find(a => a.id === campaignData.overview.currentAct);
+            if (act) {
+                document.getElementById('current-act').innerHTML = `
+                    <div class="act-progress">
+                        <h3>${act.name}</h3>
+                        <p><em>${act.tone}</em></p>
+                        <p><strong>Levels:</strong> ${act.levels}</p>
+                        <p>${act.description}</p>
+                    </div>
+                `;
+            }
+
+            // Update selectors
+            document.getElementById('current-act-select').value = campaignData.overview.currentAct;
+            document.getElementById('party-level').value = campaignData.overview.currentLevel;
+
+            // Characters with edit controls
+            const pcGrid = document.getElementById('pc-grid');
+            pcGrid.innerHTML = campaignData.playerCharacters.map((pc, i) => `
+                <div class="character-card">
+                    <div class="edit-controls">
+                        <button class="small" onclick="openPCModal(${JSON.stringify(pc).replace(/"/g, '&quot;')}, ${i})">✏️</button>
+                        <button class="small danger" onclick="deleteItem('pc', ${i})">🗑️</button>
+                    </div>
+                    <h3>${pc.name}</h3>
+                    <div class="stat-row">
+                        <span>Player:</span>
+                        <span>${pc.player}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Class:</span>
+                        <span>${pc.class}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Level:</span>
+                        <span>${pc.level}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>HP:</span>
+                        <span>${pc.hp}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>AC:</span>
+                        <span>${pc.ac}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Job:</span>
+                        <span>${pc.job}</span>
+                    </div>
+                    ${pc.notes ? `<p style="margin-top: 0.5rem; font-size: 0.9rem; font-style: italic;">${pc.notes}</p>` : ''}
+                </div>
+            `).join('');
+
+            // NPCs with edit controls
+            const npcList = document.getElementById('npc-list');
+            npcList.innerHTML = campaignData.npcs.map((npc, i) => `
+                <div class="revelation-item">
+                    <div class="edit-controls">
+                        <button class="small" onclick='openNPCModal(${JSON.stringify(npc).replace(/'/g, "&apos;").replace(/"/g, "&quot;")}, ${i})'>✏️</button>
+                        <button class="small danger" onclick="deleteItem('npc', ${i})">🗑️</button>
+                    </div>
+                    <h3>${npc.name}</h3>
+                    <p><strong>Role:</strong> ${npc.role}</p>
+                    <p>${npc.description}</p>
+                    ${npc.secret ? `<p><em>Secret: ${npc.secret}</em></p>` : ''}
+                    ${npc.catchphrase ? `<p><strong>Catchphrase:</strong> "${npc.catchphrase}"</p>` : ''}
+                </div>
+            `).join('');
+
+            // Act Progression
+            const actProg = document.getElementById('act-progression');
+            actProg.innerHTML = campaignData.acts.map(act => `
+                <div class="act-progress">
+                    <h3>${act.name} 
+                        <span class="status-badge ${
+                            act.id === campaignData.overview.currentAct ? 'status-active' : 
+                            act.id < campaignData.overview.currentAct ? 'status-completed' : 
+                            'status-upcoming'
+                        }">
+                            ${act.id === campaignData.overview.currentAct ? 'Current' : 
+                              act.id < campaignData.overview.currentAct ? 'Completed' : 
+                              'Upcoming'}
+                        </span>
+                    </h3>
+                    <p><strong>Levels:</strong> ${act.levels} | <strong>Tone:</strong> ${act.tone}</p>
+                    <p>${act.description}</p>
+                </div>
+            `).join('');
+
+            // Revelations with edit controls
+            const revelations = document.getElementById('revelations');
+            revelations.innerHTML = campaignData.revelations.map((rev, i) => `
+                <div class="revelation-item">
+                    <div class="edit-controls">
+                        <button class="small" onclick='openRevelationModal(${JSON.stringify(rev).replace(/'/g, "&apos;").replace(/"/g, "&quot;")}, ${i})'>✏️</button>
+                        <button class="small danger" onclick="deleteItem('revelation', ${i})">🗑️</button>
+                    </div>
+                    <h3>${rev.title}</h3>
+                    <p><strong>When:</strong> ${rev.when}</p>
+                    <p>${rev.description}</p>
+                </div>
+            `).join('');
+
+            // Prepared Encounters with edit controls
+            const prepEnc = document.getElementById('prepared-encounters');
+            prepEnc.innerHTML = campaignData.preparedEncounters.map((enc, i) => `
+                <div class="revelation-item">
+                    <div class="edit-controls">
+                        <button class="small" onclick='openEncounterModal(${JSON.stringify(enc).replace(/'/g, "&apos;").replace(/"/g, "&quot;")}, ${i})'>✏️</button>
+                        <button class="small danger" onclick="deleteItem('encounter', ${i})">🗑️</button>
+                    </div>
+                    <h3>${enc.name}</h3>
+                    <p><strong>Type:</strong> ${enc.type} | <strong>CR:</strong> ${enc.cr}</p>
+                    <p>${enc.description}</p>
+                </div>
+            `).join('');
+
+            // DM Quick Reference with edit controls
+            const dmRef = document.getElementById('dm-quick-ref');
+            dmRef.innerHTML = campaignData.dmReference.map((ref, i) => `
+                <div class="revelation-item">
+                    <div class="edit-controls">
+                        <button class="small" onclick='openDMRefModal(${JSON.stringify(ref).replace(/'/g, "&apos;").replace(/"/g, "&quot;")}, ${i})'>✏️</button>
+                        <button class="small danger" onclick="deleteItem('dmref', ${i})">🗑️</button>
+                    </div>
+                    <h3>${ref.title}</h3>
+                    <p>${ref.content}</p>
+                </div>
+            `).join('');
+
+            // Quick Reference with edit controls
+            const quickRef = document.getElementById('quick-ref');
+            quickRef.innerHTML = campaignData.quickReference.map((ref, i) => `
+                <p>
+                    ${editorMode ? `
+                        <button class="small" onclick='openQuickRefModal(${JSON.stringify(ref).replace(/'/g, "&apos;").replace(/"/g, "&quot;")}, ${i})' style="margin-right: 0.5rem;">✏️</button>
+                        <button class="small danger" onclick="deleteItem('quickref', ${i})" style="margin-right: 0.5rem;">🗑️</button>
+                    ` : ''}
+                    <strong>${ref.title}:</strong> ${ref.content}
+                </p>
+            `).join('');
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function rollDice(sides) {
+            const result = Math.floor(Math.random() * sides) + 1;
+            const resultDiv = document.getElementById('dice-result');
+            resultDiv.innerHTML = `d${sides}: <strong>${result}</strong>`;
+            resultDiv.style.animation = 'none';
+            setTimeout(() => resultDiv.style.animation = 'fadeIn 0.3s', 10);
+        }
+
+        function rollEncounter(type) {
+            let table = [];
+            
+            if (type === 'riding' && campaignData.encounterTables?.gtscRiding) {
+                table = campaignData.encounterTables.gtscRiding;
+            } else if (type === 'station' && campaignData.encounterTables?.stationEvents) {
+                table = campaignData.encounterTables.stationEvents;
+            } else if (type === 'feyspace' && campaignData.encounterTables?.feyspaceWeird) {
+                table = campaignData.encounterTables.feyspaceWeird;
+            }
+
+            if (table.length > 0) {
+                const roll = Math.floor(Math.random() * table.length);
+                const encounter = table[roll];
+                document.getElementById('encounter-result').innerHTML = `
+                    <div class="card" style="margin-top: 1rem;">
+                        <h3>Roll: ${roll + 1}</h3>
+                        <p><strong>${encounter.name}</strong></p>
+                        <p>${encounter.description}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Combat functions
+        function startCombat() {
+            const list = document.getElementById('initiative-list');
+            if (!combatants.length && campaignData.playerCharacters) {
+                campaignData.playerCharacters.forEach(pc => {
+                    combatants.push({
+                        name: pc.name,
+                        initiative: 0,
+                        hp: pc.hp,
+                        maxHp: pc.hp
+                    });
+                });
+            }
+            
+            list.innerHTML = `
+                <div style="margin: 1rem 0;">
+                    <input type="text" id="new-combatant" placeholder="Name">
+                    <input type="number" id="new-init" placeholder="Initiative" style="width: 100px;">
+                    <input type="number" id="new-hp" placeholder="HP" style="width: 100px;">
+                    <button onclick="addCombatant()">Add</button>
+                </div>
+                <div id="combatant-list"></div>
+            `;
+            updateCombatList();
+        }
+
+        function addCombatant() {
+            const name = document.getElementById('new-combatant').value;
+            const init = parseInt(document.getElementById('new-init').value) || 0;
+            const hp = parseInt(document.getElementById('new-hp').value) || 20;
+            
+            if (name) {
+                combatants.push({
+                    name: name,
+                    initiative: init,
+                    hp: hp,
+                    maxHp: hp
+                });
+                combatants.sort((a, b) => b.initiative - a.initiative);
+                updateCombatList();
+                saveCombat();
+            }
+        }
+
+        function updateCombatList() {
+            const list = document.getElementById('combatant-list');
+            if (!list) return;
+            
+            list.innerHTML = combatants.map((c, i) => `
+                <div class="combat-tracker" style="${i === currentTurn ? 'background: rgba(212, 160, 23, 0.2);' : ''}">
+                    <span>${c.name}</span>
+                    <span>Init: ${c.initiative}</span>
+                    <span>
+                        <input type="number" value="${c.hp}" style="width: 60px;" 
+                               onchange="updateHp(${i}, this.value)"> / ${c.maxHp}
+                    </span>
+                    <button onclick="removeCombatant(${i})">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function updateHp(index, value) {
+            combatants[index].hp = parseInt(value) || 0;
+            saveCombat();
+        }
+
+        function removeCombatant(index) {
+            combatants.splice(index, 1);
+            if (currentTurn >= combatants.length) currentTurn = 0;
+            updateCombatList();
+            saveCombat();
+        }
+
+        function nextTurn() {
+            currentTurn = (currentTurn + 1) % combatants.length;
+            updateCombatList();
+            saveCombat();
+        }
+
+        function clearCombat() {
+            combatants = [];
+            currentTurn = 0;
+            document.getElementById('initiative-list').innerHTML = '';
+            localStorage.removeItem('nipple-combat');
+        }
+
+        function saveCombat() {
+            localStorage.setItem('nipple-combat', JSON.stringify({
+                combatants: combatants,
+                currentTurn: currentTurn
+            }));
+        }
+
+        function saveNotes() {
+            const notes = document.getElementById('session-notes').value;
+            localStorage.setItem('nipple-notes', notes);
+            alert('Notes saved!');
+        }
+
+        function loadSavedData() {
+            const notes = localStorage.getItem('nipple-notes');
+            if (notes) {
+                document.getElementById('session-notes').value = notes;
+            }
+
+            const combat = localStorage.getItem('nipple-combat');
+            if (combat) {
+                const data = JSON.parse(combat);
+                combatants = data.combatants || [];
+                currentTurn = data.currentTurn || 0;
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

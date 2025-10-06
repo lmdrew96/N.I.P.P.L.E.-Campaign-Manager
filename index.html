@@ -1695,7 +1695,7 @@
             if (actProg) {
                 actProg.innerHTML = campaignData.acts.map(a => `
                     <div style="background: rgba(42, 127, 127, 0.2); border: 2px solid var(--nipple-teal); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-                        <h3>${a.name} ${a.id === campaignData.overview.currentAct ? '<span style="background: var(--nipple-teal); padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.85rem; margin-left: 0.5rem;">Current</span>' : ''}</h3>
+                        <h3>${a.name} ${a.id === campaignData.overview.currentAct ? '<span style="background: var(--nipple-teal); color: white; padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.85rem; margin-left: 0.5rem;">Current</span>' : ''}</h3>
                         <p><strong>Levels:</strong> ${a.levels} | <strong>Tone:</strong> ${a.tone}</p>
                         <p>${a.description}</p>
                     </div>

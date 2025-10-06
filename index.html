@@ -409,7 +409,10 @@
 
         <div id="characters" class="tab-content">
             <div class="card">
-                <h2>Player Characters</h2>
+                <h2>
+                    Player Characters
+                    <button onclick="addPlayerCharacter()" class="small gold">➕ Add PC</button>
+                </h2>
                 <div class="character-grid" id="pc-grid"></div>
             </div>
             <div class="card">
@@ -431,8 +434,39 @@
 
         <div id="combat" class="tab-content">
             <div class="card">
-                <h2>Combat Tracker</h2>
-                <div id="combat-tracker"></div>
+                <h2>Combat Initiative Tracker</h2>
+                <div id="combat-tracker">
+                    <div class="button-group" style="margin-bottom: 1rem;">
+                        <button onclick="addCombatant()">➕ Add Combatant</button>
+                        <button onclick="startCombat()" class="gold">▶️ Start Combat</button>
+                        <button onclick="nextTurn()" class="gold">⏭️ Next Turn</button>
+                        <button onclick="clearCombat()" class="danger">🗑️ Clear All</button>
+                    </div>
+                    <div id="initiative-list"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>🎲 Dice Roller</h2>
+                <div style="display: grid; gap: 1rem;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button onclick="rollDice(4)">d4</button>
+                        <button onclick="rollDice(6)">d6</button>
+                        <button onclick="rollDice(8)">d8</button>
+                        <button onclick="rollDice(10)">d10</button>
+                        <button onclick="rollDice(12)">d12</button>
+                        <button onclick="rollDice(20)">d20</button>
+                        <button onclick="rollDice(100)">d100</button>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="number" id="dice-count" value="1" min="1" max="20" style="width: 80px;">
+                        <span>d</span>
+                        <input type="number" id="dice-sides" value="20" min="2" max="100" style="width: 80px;">
+                        <span>+</span>
+                        <input type="number" id="dice-modifier" value="0" min="-20" max="20" style="width: 80px;">
+                        <button onclick="rollCustomDice()" class="gold">Roll Custom</button>
+                    </div>
+                    <div id="dice-results" style="background: rgba(13, 31, 45, 0.8); border: 1px solid var(--nipple-teal); border-radius: 5px; padding: 1rem; min-height: 100px;"></div>
+                </div>
             </div>
         </div>
 
@@ -445,7 +479,10 @@
 
         <div id="dmnotes" class="tab-content">
             <div class="card">
-                <h2>Session Notes</h2>
+                <h2>
+                    Session Notes
+                    <button onclick="viewSessionHistory()" class="small gold">📜 View History</button>
+                </h2>
                 <textarea id="session-notes" rows="10" placeholder="Session notes..."></textarea>
                 <button onclick="saveNotes()">Save Notes</button>
             </div>
@@ -1730,6 +1767,484 @@
             const savedNotes = localStorage.getItem('nipple-notes');
             if (savedNotes) {
                 document.getElementById('session-notes').value = savedNotes;
+            }
+        }
+
+        // Combat Tracker Functions
+        let combatants = [];
+        let currentTurn = 0;
+        let combatActive = false;
+
+        function addCombatant() {
+            const name = prompt('Combatant name:');
+            if (!name) return;
+            
+            const initiative = prompt('Initiative roll:', '10');
+            const hp = prompt('Hit Points:', '10');
+            const ac = prompt('Armor Class:', '10');
+            
+            combatants.push({
+                name: name,
+                initiative: parseInt(initiative) || 10,
+                hp: parseInt(hp) || 10,
+                maxHp: parseInt(hp) || 10,
+                ac: parseInt(ac) || 10,
+                conditions: []
+            });
+            
+            updateInitiativeList();
+        }
+
+        function startCombat() {
+            if (combatants.length === 0) {
+                alert('Add combatants first!');
+                return;
+            }
+            
+            // Sort by initiative
+            combatants.sort((a, b) => b.initiative - a.initiative);
+            combatActive = true;
+            currentTurn = 0;
+            updateInitiativeList();
+        }
+
+        function nextTurn() {
+            if (!combatActive || combatants.length === 0) return;
+            
+            currentTurn = (currentTurn + 1) % combatants.length;
+            updateInitiativeList();
+        }
+
+        function clearCombat() {
+            if (confirm('Clear all combatants?')) {
+                combatants = [];
+                currentTurn = 0;
+                combatActive = false;
+                updateInitiativeList();
+            }
+        }
+
+        function updateInitiativeList() {
+            const list = document.getElementById('initiative-list');
+            if (combatants.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: var(--nipple-teal); padding: 2rem;">No combatants added yet</p>';
+                return;
+            }
+            
+            list.innerHTML = combatants.map((c, i) => {
+                const isActive = combatActive && i === currentTurn;
+                return `
+                    <div style="background: ${isActive ? 'rgba(212, 160, 23, 0.3)' : 'rgba(42, 127, 127, 0.2)'}; 
+                                border: 2px solid ${isActive ? 'var(--nipple-gold)' : 'var(--nipple-teal)'}; 
+                                border-radius: 8px; padding: 1rem; margin-bottom: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <div style="flex: 1;">
+                                <h3 style="color: var(--nipple-gold); margin: 0;">${c.name} ${isActive ? '⚔️' : ''}</h3>
+                                <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                                    <span>Init: <strong>${c.initiative}</strong></span>
+                                    <span>HP: <strong>${c.hp}/${c.maxHp}</strong></span>
+                                    <span>AC: <strong>${c.ac}</strong></span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                                <button class="small" onclick="adjustHP(${i}, -1)">-1 HP</button>
+                                <button class="small" onclick="adjustHP(${i}, 1)">+1 HP</button>
+                                <button class="small danger" onclick="removeCombatant(${i})">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function adjustHP(index, amount) {
+            combatants[index].hp = Math.max(0, Math.min(combatants[index].maxHp, combatants[index].hp + amount));
+            updateInitiativeList();
+        }
+
+        function removeCombatant(index) {
+            combatants.splice(index, 1);
+            if (currentTurn >= combatants.length) currentTurn = 0;
+            updateInitiativeList();
+        }
+
+        // Dice Roller Functions
+        let diceHistory = [];
+
+        function rollDice(sides) {
+            const result = Math.floor(Math.random() * sides) + 1;
+            const roll = {
+                dice: `1d${sides}`,
+                result: result,
+                timestamp: new Date().toLocaleTimeString()
+            };
+            diceHistory.unshift(roll);
+            if (diceHistory.length > 10) diceHistory.pop();
+            displayDiceResults();
+        }
+
+        function rollCustomDice() {
+            const count = parseInt(document.getElementById('dice-count').value) || 1;
+            const sides = parseInt(document.getElementById('dice-sides').value) || 20;
+            const modifier = parseInt(document.getElementById('dice-modifier').value) || 0;
+            
+            const rolls = [];
+            let total = 0;
+            
+            for (let i = 0; i < count; i++) {
+                const roll = Math.floor(Math.random() * sides) + 1;
+                rolls.push(roll);
+                total += roll;
+            }
+            
+            total += modifier;
+            
+            const roll = {
+                dice: `${count}d${sides}${modifier !== 0 ? (modifier > 0 ? '+' : '') + modifier : ''}`,
+                rolls: rolls,
+                modifier: modifier,
+                result: total,
+                timestamp: new Date().toLocaleTimeString()
+            };
+            
+            diceHistory.unshift(roll);
+            if (diceHistory.length > 10) diceHistory.pop();
+            displayDiceResults();
+        }
+
+        function displayDiceResults() {
+            const resultsDiv = document.getElementById('dice-results');
+            if (diceHistory.length === 0) {
+                resultsDiv.innerHTML = '<p style="text-align: center; color: var(--nipple-teal);">No rolls yet</p>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = diceHistory.map(roll => {
+                let html = `<div style="padding: 0.5rem; margin-bottom: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">`;
+                html += `<div style="display: flex; justify-content: space-between; align-items: center;">`;
+                html += `<span><strong>${roll.dice}</strong></span>`;
+                html += `<span style="color: var(--nipple-gold); font-size: 1.2rem; font-weight: bold;">${roll.result}</span>`;
+                html += `</div>`;
+                if (roll.rolls) {
+                    html += `<div style="font-size: 0.85rem; color: var(--nipple-teal); margin-top: 0.25rem;">`;
+                    html += `Rolls: [${roll.rolls.join(', ')}]${roll.modifier !== 0 ? ` ${roll.modifier > 0 ? '+' : ''}${roll.modifier}` : ''}`;
+                    html += `</div>`;
+                }
+                html += `<div style="font-size: 0.75rem; color: rgba(232, 244, 248, 0.6); margin-top: 0.25rem;">${roll.timestamp}</div>`;
+                html += `</div>`;
+                return html;
+            }).join('');
+        }
+
+        // Character Management Functions
+        function addPlayerCharacter() {
+            const name = prompt('Character name:');
+            if (!name) return;
+            
+            const player = prompt('Player name:');
+            const charClass = prompt('Class:');
+            const level = prompt('Level:', '1');
+            const hp = prompt('Hit Points:', '10');
+            const ac = prompt('Armor Class:', '10');
+            
+            if (!campaignData.playerCharacters) campaignData.playerCharacters = [];
+            
+            campaignData.playerCharacters.push({
+                name: name,
+                player: player || 'Unknown',
+                class: charClass || 'Unknown',
+                level: parseInt(level) || 1,
+                hp: parseInt(hp) || 10,
+                ac: parseInt(ac) || 10
+            });
+            
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        function editCharacter(index) {
+            const pc = campaignData.playerCharacters[index];
+            
+            const name = prompt('Character name:', pc.name);
+            if (name === null) return;
+            
+            const player = prompt('Player name:', pc.player);
+            const charClass = prompt('Class:', pc.class);
+            const level = prompt('Level:', pc.level);
+            const hp = prompt('Hit Points:', pc.hp);
+            const ac = prompt('Armor Class:', pc.ac);
+            
+            campaignData.playerCharacters[index] = {
+                name: name || pc.name,
+                player: player || pc.player,
+                class: charClass || pc.class,
+                level: parseInt(level) || pc.level,
+                hp: parseInt(hp) || pc.hp,
+                ac: parseInt(ac) || pc.ac
+            };
+            
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        function deleteCharacter(index) {
+            if (confirm(`Delete ${campaignData.playerCharacters[index].name}?`)) {
+                campaignData.playerCharacters.splice(index, 1);
+                saveToLocalStorage();
+                populateContent();
+            }
+        }
+
+        // Act Management Functions
+        function addCustomAct() {
+            const name = prompt('Act name:');
+            if (!name) return;
+            
+            const levels = prompt('Level range (e.g., "1-4"):', '1-4');
+            const tone = prompt('Tone/Theme:');
+            const description = prompt('Description:');
+            
+            const newId = Math.max(...campaignData.acts.map(a => a.id)) + 1;
+            
+            campaignData.acts.push({
+                id: newId,
+                name: name,
+                levels: levels || '1-4',
+                tone: tone || 'Custom',
+                description: description || 'Custom act'
+            });
+            
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        function editAct(id) {
+            const act = campaignData.acts.find(a => a.id === id);
+            if (!act) return;
+            
+            const name = prompt('Act name:', act.name);
+            if (name === null) return;
+            
+            const levels = prompt('Level range:', act.levels);
+            const tone = prompt('Tone/Theme:', act.tone);
+            const description = prompt('Description:', act.description);
+            
+            act.name = name || act.name;
+            act.levels = levels || act.levels;
+            act.tone = tone || act.tone;
+            act.description = description || act.description;
+            
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        function deleteAct(id) {
+            const act = campaignData.acts.find(a => a.id === id);
+            if (confirm(`Delete ${act.name}?`)) {
+                campaignData.acts = campaignData.acts.filter(a => a.id !== id);
+                saveToLocalStorage();
+                populateContent();
+            }
+        }
+
+        function setCurrentAct(id) {
+            campaignData.overview.currentAct = id;
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        // Session History Functions
+        function saveSessionHistory() {
+            if (!campaignData.sessionHistory) campaignData.sessionHistory = [];
+            
+            const sessionNumber = campaignData.sessionHistory.length + 1;
+            const date = new Date().toLocaleDateString();
+            const notes = document.getElementById('session-notes').value;
+            
+            if (!notes.trim()) {
+                alert('Please add some session notes first!');
+                return;
+            }
+            
+            campaignData.sessionHistory.push({
+                sessionNumber: sessionNumber,
+                date: date,
+                level: campaignData.overview.currentLevel,
+                act: campaignData.overview.currentAct,
+                notes: notes
+            });
+            
+            // Clear current notes
+            document.getElementById('session-notes').value = '';
+            localStorage.setItem('nipple-notes', '');
+            
+            saveToLocalStorage();
+            alert(`Session ${sessionNumber} saved to history!`);
+        }
+
+        function viewSessionHistory() {
+            if (!campaignData.sessionHistory || campaignData.sessionHistory.length === 0) {
+                alert('No session history yet!');
+                return;
+            }
+            
+            let html = '<div style="max-height: 400px; overflow-y: auto;">';
+            html += '<h3 style="color: var(--nipple-gold); margin-bottom: 1rem;">📜 Session History</h3>';
+            
+            campaignData.sessionHistory.slice().reverse().forEach(session => {
+                const act = campaignData.acts.find(a => a.id === session.act);
+                html += `<div style="background: rgba(42, 127, 127, 0.2); border: 2px solid var(--nipple-teal); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">`;
+                html += `<h4 style="color: var(--nipple-gold);">Session ${session.sessionNumber} - ${session.date}</h4>`;
+                html += `<p><strong>Level:</strong> ${session.level} | <strong>Act:</strong> ${act ? act.name : 'Unknown'}</p>`;
+                html += `<p style="margin-top: 0.5rem; white-space: pre-wrap;">${session.notes}</p>`;
+                html += `</div>`;
+            });
+            
+            html += '</div>';
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    ${html}
+                    <div class="button-group">
+                        <button onclick="this.closest('.modal').remove()">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Update populateContent to include edit buttons
+        function populateContent() {
+            // Basic population of content
+            document.getElementById('campaign-info').innerHTML = `
+                <p><strong>Setting:</strong> ${campaignData.overview.setting}</p>
+                <p><strong>Theme:</strong> ${campaignData.overview.theme}</p>
+                <p><strong>Current Level:</strong> ${campaignData.overview.currentLevel}</p>
+            `;
+            
+            // Populate current act
+            const act = campaignData.acts.find(a => a.id === campaignData.overview.currentAct);
+            if (act) {
+                document.getElementById('current-act').innerHTML = `
+                    <div style="background: rgba(42, 127, 127, 0.2); border: 2px solid var(--nipple-teal); border-radius: 8px; padding: 1rem;">
+                        <h3>${act.name}</h3>
+                        <p><em>${act.tone}</em></p>
+                        <p><strong>Levels:</strong> ${act.levels}</p>
+                        <p>${act.description}</p>
+                    </div>
+                `;
+            }
+            
+            // Populate characters with edit buttons
+            const pcGrid = document.getElementById('pc-grid');
+            if (campaignData.playerCharacters && pcGrid) {
+                pcGrid.innerHTML = campaignData.playerCharacters.map((pc, i) => `
+                    <div class="character-card">
+                        <h3>${pc.name}</h3>
+                        <div class="stat-row">
+                            <span>Player:</span>
+                            <span>${pc.player}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Class:</span>
+                            <span>${pc.class}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Level:</span>
+                            <span>${pc.level}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>HP:</span>
+                            <span>${pc.hp}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>AC:</span>
+                            <span>${pc.ac}</span>
+                        </div>
+                        <div style="margin-top: 0.5rem; display: flex; gap: 0.25rem;">
+                            <button class="small" onclick="editCharacter(${i})">✏️ Edit</button>
+                            <button class="small danger" onclick="deleteCharacter(${i})">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Populate NPCs
+            const npcList = document.getElementById('npc-list');
+            if (campaignData.npcs && npcList) {
+                npcList.innerHTML = campaignData.npcs.map(npc => `
+                    <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
+                        <h3>${npc.name}</h3>
+                        ${npc.role ? `<p><strong>Role:</strong> ${npc.role}</p>` : ''}
+                        <p>${npc.description}</p>
+                        ${npc.secret ? `<p><em>Secret: ${npc.secret}</em></p>` : ''}
+                    </div>
+                `).join('');
+            }
+            
+            // Populate act progression with edit buttons
+            const actProg = document.getElementById('act-progression');
+            if (actProg) {
+                actProg.innerHTML = `
+                    <div style="margin-bottom: 1rem;">
+                        <button onclick="addCustomAct()" class="gold">➕ Add Custom Act</button>
+                    </div>
+                ` + campaignData.acts.map(a => `
+                    <div style="background: rgba(42, 127, 127, 0.2); border: 2px solid var(--nipple-teal); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                        <h3>${a.name} ${a.id === campaignData.overview.currentAct ? '<span style="background: var(--nipple-teal); color: white; padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.85rem; margin-left: 0.5rem;">Current</span>' : ''}</h3>
+                        <p><strong>Levels:</strong> ${a.levels} | <strong>Tone:</strong> ${a.tone}</p>
+                        <p>${a.description}</p>
+                        <div style="margin-top: 0.5rem; display: flex; gap: 0.25rem;">
+                            ${a.id !== campaignData.overview.currentAct ? `<button class="small gold" onclick="setCurrentAct(${a.id})">Set as Current</button>` : ''}
+                            <button class="small" onclick="editAct(${a.id})">✏️ Edit</button>
+                            ${a.id > 5 ? `<button class="small danger" onclick="deleteAct(${a.id})">🗑️ Delete</button>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Populate revelations
+            const revelations = document.getElementById('revelations');
+            if (revelations && campaignData.revelations) {
+                revelations.innerHTML = campaignData.revelations.map(rev => `
+                    <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
+                        <h3>${rev.title}</h3>
+                        <p><strong>When:</strong> ${rev.when}</p>
+                        <p>${rev.description}</p>
+                    </div>
+                `).join('');
+            }
+            
+            // Populate encounters
+            const encounters = document.getElementById('prepared-encounters');
+            if (encounters && campaignData.preparedEncounters) {
+                encounters.innerHTML = campaignData.preparedEncounters.map(enc => `
+                    <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
+                        <h3>${enc.name}</h3>
+                        <p><strong>Type:</strong> ${enc.type} | <strong>CR:</strong> ${enc.cr || 'N/A'}</p>
+                        <p>${enc.description}</p>
+                    </div>
+                `).join('');
+            }
+            
+            // Load saved notes
+            const savedNotes = localStorage.getItem('nipple-notes');
+            if (savedNotes) {
+                document.getElementById('session-notes').value = savedNotes;
+            }
+        }
+
+        // Update saveNotes to include session history option
+        function saveNotes() {
+            localStorage.setItem('nipple-notes', document.getElementById('session-notes').value);
+            
+            const saveToHistory = confirm('Notes saved! Would you like to save this as a completed session in history?');
+            if (saveToHistory) {
+                saveSessionHistory();
+            } else {
+                alert('Notes saved!');
             }
         }
 

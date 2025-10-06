@@ -29,6 +29,7 @@
             background: linear-gradient(135deg, var(--nipple-dark) 0%, var(--nipple-blue) 100%);
             color: var(--nipple-light);
             min-height: 100vh;
+            padding-bottom: 3rem;
         }
 
         .header {
@@ -156,6 +157,23 @@
             margin-bottom: 0.5rem;
         }
 
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dashboard-card {
+            background: rgba(42, 127, 127, 0.2);
+            border: 2px solid var(--nipple-teal);
+        }
+
+        .quick-dice-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
         .upload-zone {
             border: 3px dashed var(--nipple-teal);
             border-radius: 10px;
@@ -203,6 +221,27 @@
             margin-bottom: 0.5rem;
         }
 
+        .import-wizard {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .import-summary {
+            background: rgba(42, 127, 127, 0.2);
+            border: 2px solid var(--nipple-teal);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .found-item {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            background: rgba(212, 160, 23, 0.2);
+            border-left: 3px solid var(--nipple-gold);
+            border-radius: 3px;
+        }
+
         .import-options {
             display: grid;
             gap: 0.5rem;
@@ -221,6 +260,35 @@
         .import-option input[type="checkbox"] {
             width: auto;
             margin: 0;
+        }
+
+        .parser-tip {
+            background: rgba(212, 160, 23, 0.1);
+            border-left: 3px solid var(--nipple-gold);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 5px;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .alert.success {
+            background: rgba(42, 127, 127, 0.3);
+            border: 1px solid var(--nipple-teal);
+        }
+
+        .alert.warning {
+            background: rgba(212, 160, 23, 0.2);
+            border: 1px solid var(--nipple-gold);
+        }
+
+        .alert.info {
+            background: rgba(26, 58, 82, 0.5);
+            border: 1px solid var(--nipple-teal);
         }
 
         .character-grid {
@@ -363,16 +431,132 @@
             margin-top: 0.5rem;
         }
 
+        .quick-actions-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(13, 31, 45, 0.95);
+            border-top: 2px solid var(--nipple-gold);
+            padding: 0.75rem;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            z-index: 100;
+        }
+
+        .quick-actions-bar button {
+            margin: 0;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .status-bar {
+            background: rgba(13, 31, 45, 0.9);
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--nipple-teal);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--nipple-teal);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            animation: slideIn 0.3s, slideOut 0.3s 2.7s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+
+        .dm-tip {
+            background: rgba(212, 160, 23, 0.1);
+            border-left: 3px solid var(--nipple-gold);
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+            border-radius: 3px;
+        }
+
+        body.new-dm-mode .dm-tip {
+            display: block;
+        }
+
+        body:not(.new-dm-mode) .dm-tip {
+            display: none;
+        }
+
+        .template-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .template-card {
+            background: rgba(42, 127, 127, 0.2);
+            border: 2px solid var(--nipple-teal);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .template-card:hover {
+            background: rgba(42, 127, 127, 0.4);
+            border-color: var(--nipple-gold);
+            transform: translateY(-2px);
+        }
+
+        .template-card h4 {
+            color: var(--nipple-gold);
+            margin-bottom: 0.5rem;
+        }
+
         @media (max-width: 768px) {
             .content { padding: 1rem; }
             .tabs { flex-wrap: wrap; }
             .header { text-align: center; }
             .header h1 { font-size: 1.5rem; }
             .header-buttons { justify-content: center; width: 100%; }
+            .quick-actions-bar { font-size: 0.8rem; }
+            .quick-actions-bar button { padding: 0.4rem 0.8rem; }
         }
     </style>
 </head>
 <body>
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <span class="status-item">📍 Act <span id="status-act">1</span> - Level <span id="status-level">2</span></span>
+        <span class="status-item">💾 Last saved: <span id="last-save">Just now</span></span>
+        <span class="status-item">⏱️ Session: <span id="session-timer">0:00</span></span>
+    </div>
+
     <div class="header">
         <div class="header-left">
             <h1>N.I.P.P.L.E. FeySpace Campaign</h1>
@@ -380,12 +564,14 @@
         </div>
         <div class="header-buttons">
             <button class="upload-button" onclick="openUploadModal()">📄 Upload Prep Doc</button>
-            <button class="editor-toggle" onclick="toggleEditor()">📝 Editor Mode</button>
+            <button class="upload-button" onclick="openTemplateModal()">📋 Templates</button>
+            <button class="editor-toggle" onclick="toggleNewDMMode()">💡 New DM Mode</button>
         </div>
     </div>
 
     <div class="tabs">
-        <button class="tab-button active" onclick="showTab('overview')">Overview</button>
+        <button class="tab-button active" onclick="showTab('dashboard')">🎯 Dashboard</button>
+        <button class="tab-button" onclick="showTab('overview')">Overview</button>
         <button class="tab-button" onclick="showTab('characters')">Characters</button>
         <button class="tab-button" onclick="showTab('quests')">Quests</button>
         <button class="tab-button" onclick="showTab('factions')">Factions</button>
@@ -400,8 +586,61 @@
     </div>
 
     <div class="content">
-        <!-- Tab content remains the same as before -->
-        <div id="overview" class="tab-content active">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dm-tip">
+                💡 <strong>Dashboard Tip:</strong> This is your command center! Everything you need at a glance for running your session.
+            </div>
+            <div class="dashboard-grid">
+                <!-- Active Quest Summary -->
+                <div class="card dashboard-card">
+                    <h3>🎯 Active Quest</h3>
+                    <div id="active-quest-summary"></div>
+                </div>
+                
+                <!-- Current Party Status -->
+                <div class="card dashboard-card">
+                    <h3>⚔️ Party Status</h3>
+                    <div id="party-status-quick"></div>
+                </div>
+                
+                <!-- Quick Dice Roller -->
+                <div class="card dashboard-card">
+                    <h3>🎲 Quick Rolls</h3>
+                    <div class="quick-dice-buttons">
+                        <button onclick="quickRoll('Perception', 'd20')">👁️ Perception</button>
+                        <button onclick="quickRoll('Investigation', 'd20')">🔍 Investigation</button>
+                        <button onclick="quickRoll('Initiative', 'd20')">⚔️ Initiative</button>
+                        <button onclick="quickRoll('Random', 'd100')">🎲 d100</button>
+                    </div>
+                </div>
+                
+                <!-- Next Planned Event -->
+                <div class="card dashboard-card">
+                    <h3>📅 What's Next?</h3>
+                    <div id="next-event"></div>
+                </div>
+
+                <!-- Quick Reference -->
+                <div class="card dashboard-card">
+                    <h3>📖 Quick Reference</h3>
+                    <div id="quick-ref-dashboard"></div>
+                </div>
+
+                <!-- Encounter Generator -->
+                <div class="card dashboard-card">
+                    <h3>🎲 Random Encounter</h3>
+                    <div style="display: grid; gap: 0.5rem;">
+                        <button onclick="generateGTSCEncounter()">🐱 GTSC Riding</button>
+                        <button onclick="generateStationEvent()">🚉 Station Event</button>
+                        <button onclick="generateFeyspaceWeird()">✨ FeySpace Weird</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content">
             <div class="card">
                 <h2>Campaign Overview</h2>
                 <div id="campaign-info"></div>
@@ -412,7 +651,11 @@
             </div>
         </div>
 
+        <!-- Characters Tab -->
         <div id="characters" class="tab-content">
+            <div class="dm-tip">
+                💡 <strong>Character Tip:</strong> Give each NPC one memorable trait (voice, mannerism, or catchphrase) to make them distinct.
+            </div>
             <div class="card">
                 <h2>
                     Player Characters
@@ -426,6 +669,7 @@
             </div>
         </div>
 
+        <!-- Quests Tab -->
         <div id="quests" class="tab-content">
             <div class="card">
                 <h2>
@@ -436,6 +680,7 @@
             </div>
         </div>
 
+        <!-- Factions Tab -->
         <div id="factions" class="tab-content">
             <div class="card">
                 <h2>
@@ -446,6 +691,7 @@
             </div>
         </div>
 
+        <!-- Locations Tab -->
         <div id="locations" class="tab-content">
             <div class="card">
                 <h2>
@@ -456,6 +702,7 @@
             </div>
         </div>
 
+        <!-- Loot Tab -->
         <div id="loot" class="tab-content">
             <div class="card">
                 <h2>Party Resources</h2>
@@ -470,6 +717,7 @@
             </div>
         </div>
 
+        <!-- Timeline Tab -->
         <div id="timeline" class="tab-content">
             <div class="card">
                 <h2>
@@ -480,6 +728,7 @@
             </div>
         </div>
 
+        <!-- Storyline Tab -->
         <div id="storyline" class="tab-content">
             <div class="card">
                 <h2>Act Progression</h2>
@@ -491,7 +740,11 @@
             </div>
         </div>
 
+        <!-- Combat Tab -->
         <div id="combat" class="tab-content">
+            <div class="dm-tip">
+                💡 <strong>Combat Tip:</strong> Adjust encounter difficulty based on party resources. If they're low on HP/spells, consider making it easier. Write initiative order on a folded card over your screen so players can see turn order.
+            </div>
             <div class="card">
                 <h2>Combat Initiative Tracker</h2>
                 <div id="combat-tracker">
@@ -507,6 +760,9 @@
             </div>
             <div class="card">
                 <h2>🎲 Dice Roller</h2>
+                <div class="dm-tip">
+                    💡 <strong>Dice Tip:</strong> Roll behind the screen for tension, in the open for trust. Both have their place!
+                </div>
                 <div style="display: grid; gap: 1rem;">
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         <button onclick="rollDice(4)">d4</button>
@@ -530,24 +786,37 @@
             </div>
         </div>
 
+        <!-- Encounters Tab -->
         <div id="encounters" class="tab-content">
+            <div class="dm-tip">
+                💡 <strong>Encounter Tip:</strong> Use encounter tables to add variety and surprise to your sessions!
+            </div>
             <div class="card">
                 <h2>Prepared Encounters</h2>
                 <div id="prepared-encounters"></div>
             </div>
+            <div class="card">
+                <h2>🎲 Encounter Tables</h2>
+                <div id="encounter-tables"></div>
+            </div>
         </div>
 
+        <!-- DM Notes Tab -->
         <div id="dmnotes" class="tab-content">
             <div class="card">
                 <h2>
                     Session Notes
-                    <button onclick="viewSessionHistory()" class="small gold">📜 View History</button>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button onclick="viewSessionHistory()" class="small gold">📜 View History</button>
+                        <button onclick="openTemplateModal()" class="small">📋 Use Template</button>
+                    </div>
                 </h2>
                 <textarea id="session-notes" rows="10" placeholder="Session notes..."></textarea>
                 <button onclick="saveNotes()">Save Notes</button>
             </div>
         </div>
 
+        <!-- Data Manager Tab -->
         <div id="data" class="tab-content">
             <div class="card">
                 <h2>Data Management</h2>
@@ -560,10 +829,18 @@
         </div>
     </div>
 
+    <!-- Quick Actions Bar -->
+    <div class="quick-actions-bar">
+        <button onclick="quickRoll('Perception', 'd20')" title="Quick perception check">👁️ Perception</button>
+        <button onclick="randomNPC()" title="Generate random NPC name">🎭 Random NPC</button>
+        <button onclick="quickNote()" title="Quick note">📝 Note</button>
+        <button onclick="startBreakTimer()" title="Start 10-min timer">⏱️ Break</button>
+    </div>
+
     <!-- Upload Modal -->
     <div id="upload-modal" class="modal">
         <div class="modal-content">
-            <h2>Upload Prep Document</h2>
+            <h2>📄 Upload Prep Document</h2>
             
             <div class="upload-zone" id="drop-zone" onclick="document.getElementById('doc-upload').click()">
                 <div class="upload-icon">📄</div>
@@ -573,16 +850,15 @@
             </div>
 
             <div class="help-text">
-                <h4>🧠 Smart Document Parser</h4>
-                <p style="margin-bottom: 0.5rem;">The parser now intelligently recognizes content without requiring specific formatting! It can:</p>
+                <h4>📋 Parser Guide</h4>
+                <p style="margin-bottom: 0.5rem;">For best results, use clear headers in your document:</p>
                 <ul>
-                    <li><strong>NPCs:</strong> Detects names, roles, and descriptions automatically</li>
-                    <li><strong>Encounters:</strong> Identifies combat, social, and puzzle encounters</li>
-                    <li><strong>Revelations:</strong> Finds secrets, plot twists, and hidden information</li>
-                    <li><strong>Items:</strong> Recognizes weapons, armor, and magical items</li>
-                    <li><strong>Context-Aware:</strong> Uses natural language patterns to classify content</li>
+                    <li><strong>NPCs:</strong> Use headers like "NPCs", "Characters", or "Cast"</li>
+                    <li><strong>Encounters:</strong> Use "Encounters", "Combat", or "Battles"</li>
+                    <li><strong>Revelations:</strong> Use "Secrets", "Revelations", or "Plot Twists"</li>
+                    <li><strong>Items:</strong> Use "Items", "Loot", or "Treasure"</li>
                 </ul>
-                <p style="margin-top: 0.5rem; font-style: italic;">Just write naturally! The parser will figure out what's what. Headers and keywords still help, but aren't required.</p>
+                <p style="margin-top: 0.5rem; font-style: italic;">The parser will do its best to identify content even without headers!</p>
             </div>
 
             <div id="parse-status"></div>
@@ -594,2233 +870,35 @@
         </div>
     </div>
 
+    <!-- Template Modal -->
+    <div id="template-modal" class="modal">
+        <div class="modal-content">
+            <h2>📋 Session Prep Templates</h2>
+            <p style="margin-bottom: 1rem;">Choose a template to get started with your session prep:</p>
+            
+            <div class="template-selector">
+                <div class="template-card" onclick="insertTemplate('session')">
+                    <h4>📝 Session Prep</h4>
+                    <p>Full session structure with scenes, NPCs, and encounters</p>
+                </div>
+                <div class="template-card" onclick="insertTemplate('npc')">
+                    <h4>🎭 NPC Template</h4>
+                    <p>Quick NPC creation with personality and secrets</p>
+                </div>
+                <div class="template-card" onclick="insertTemplate('dungeon')">
+                    <h4>🏰 Dungeon/Location</h4>
+                    <p>Room-by-room dungeon or location layout</p>
+                </div>
+                <div class="template-card" onclick="insertTemplate('encounter')">
+                    <h4>⚔️ Encounter</h4>
+                    <p>Combat or social encounter template</p>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button onclick="closeTemplateModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Campaign data structure
-        let campaignData = {
-            overview: {
-                setting: "FeySpace - Where the Fey Wild meets outer space",
-                theme: "Corporate satire meets cosmic horror",
-                currentLevel: 2,
-                currentAct: 1
-            },
-            acts: [
-                {
-                    id: 1,
-                    name: "Act 1: Regular Space",
-                    levels: "1-4",
-                    tone: "Corporate comedy, light stakes",
-                    description: "We're just doing our jobs."
-                },
-                {
-                    id: 2,
-                    name: "Act 2: FeySpace Entry",
-                    levels: "5-8",
-                    tone: "Alice in Wonderland meets Spelljammer",
-                    description: "This isn't where we're supposed to be."
-                },
-                {
-                    id: 3,
-                    name: "Act 3: The Investigation",
-                    levels: "9-12",
-                    tone: "Corporate mystery becomes cosmic horror",
-                    description: "Something's very wrong here."
-                },
-                {
-                    id: 4,
-                    name: "Act 4: The Resistance",
-                    levels: "13-16",
-                    tone: "Rebellion against overwhelming odds",
-                    description: "N.I.P.P.L.E. is a tool of cosmic evil."
-                },
-                {
-                    id: 5,
-                    name: "Act 5: The Blooming",
-                    levels: "17-20",
-                    tone: "Epic heroism, cosmic showdown",
-                    description: "We go all the way."
-                }
-            ],
-            playerCharacters: [],
-            npcs: [],
-            revelations: [],
-            preparedEncounters: [],
-            sessionNotes: [],
-            items: [],
-            plotHooks: [],
-            mechanics: [],
-            lore: []
-        };
-
-        let editorMode = false;
-        let parsedDocument = null;
-
-        // Initialize
-        function init() {
-            loadFromLocalStorage();
-            populateContent();
-            setupDragAndDrop();
-        }
-
-        // Document Upload Functions
-        function openUploadModal() {
-            document.getElementById('upload-modal').classList.add('active');
-        }
-
-        function closeUploadModal() {
-            document.getElementById('upload-modal').classList.remove('active');
-            document.getElementById('parse-status').innerHTML = '';
-            document.getElementById('parsed-preview').innerHTML = '';
-            parsedDocument = null;
-        }
-
-        function setupDragAndDrop() {
-            const dropZone = document.getElementById('drop-zone');
-            
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('dragover');
-            });
-            
-            dropZone.addEventListener('dragleave', () => {
-                dropZone.classList.remove('dragover');
-            });
-            
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-                handleFileSelect({ target: { files: e.dataTransfer.files } });
-            });
-        }
-
-        async function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const status = document.getElementById('parse-status');
-            status.innerHTML = '<div class="status-processing">Processing document...</div>';
-            
-            const fileName = file.name.toLowerCase();
-            let content = '';
-            
-            try {
-                if (fileName.endsWith('.docx')) {
-                    // Parse DOCX using Mammoth
-                    const arrayBuffer = await file.arrayBuffer();
-                    const result = await mammoth.extractRawText({ arrayBuffer });
-                    content = result.value;
-                } else if (fileName.endsWith('.txt') || fileName.endsWith('.md')) {
-                    // Parse text files
-                    content = await file.text();
-                } else {
-                    throw new Error('Unsupported file type');
-                }
-                
-                // Parse the content
-                parsedDocument = parseDocument(content);
-                displayParsedContent(parsedDocument);
-                
-            } catch (error) {
-                status.innerHTML = `<div style="color: var(--nipple-red);">Error: ${error.message}</div>`;
-            }
-        }
-
-        function parseDocument(text) {
-            const parsed = {
-                npcs: [],
-                encounters: [],
-                revelations: [],
-                items: [],
-                magicItems: [],
-                plotHooks: [],
-                mechanics: [],
-                lore: [],
-                notes: [],
-                raw: text
-            };
-            
-            // Enhanced pattern recognition
-            const patterns = {
-                // NPC indicators - names, titles, roles
-                npcIndicators: /\b(is a|is an|works as|serves as|known as|called|named|title:|role:|job:|occupation:|position:)\b/i,
-                npcNames: /^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*(?:\s+(?:the|von|van|de|del|la)\s+[A-Z][a-z]+)?)\s*[-–—:]/,
-                properNouns: /\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3}\b/g,
-                
-                // Encounter indicators
-                encounterIndicators: /\b(fight|battle|combat|encounter|ambush|attack|defend|CR\s*\d+|challenge rating|difficulty|enemies|monsters|creatures)\b/i,
-                encounterTypes: /\b(social|combat|puzzle|exploration|trap|skill challenge)\b/i,
-                crPattern: /\bCR\s*(\d+(?:\/\d+)?)\b/i,
-                
-                // Revelation indicators
-                revelationIndicators: /\b(secret|reveal|discover|learn|truth|hidden|mystery|plot|twist|surprise|doesn't know|unaware|actually|really)\b/i,
-                timingIndicators: /\b(act\s*\d+|level\s*\d+|session\s*\d+|when|after|before|during|eventually|later|soon)\b/i,
-                
-                // Item indicators
-                itemIndicators: /\b(item|weapon|armor|potion|scroll|ring|amulet|wand|staff|treasure|loot|magic|artifact|\+\d+)\b/i,
-                
-                // Plot hook indicators
-                plotHookIndicators: /\b(plot hook|adventure hook|quest|mission|task|party|players could|might|scenario|situation)\b/i,
-                
-                // Mechanics/table indicators
-                mechanicsIndicators: /\b(roll|table|d\d+|DC\s*\d+|check|save|ability|mechanic|rule|when|if)\b/i,
-                tablePattern: /^\d+[\.)]\s+.+/,
-                
-                // Lore indicators
-                loreIndicators: /\b(history|lore|background|origin|legend|myth|known|believed|ancient|old)\b/i,
-                
-                // Structural markers
-                headers: /^#{1,6}\s+(.+)$/,
-                bullets: /^[\*\-•]\s+(.+)$/,
-                numbered: /^\d+[\.)]\s+(.+)$/,
-                bold: /\*\*(.+?)\*\*/g,
-                
-                // Contextual clues
-                descriptions: /\b(description|appears|looks like|seems|wearing|carrying|has|with)\b/i,
-                motivations: /\b(wants|needs|seeks|desires|goal|motivation|trying to|plans to)\b/i,
-                relationships: /\b(ally|enemy|friend|rival|works with|opposes|serves|loyal to)\b/i
-            };
-            
-            const lines = text.split('\n');
-            let context = {
-                currentSection: null,
-                lastHeader: null,
-                recentProperNouns: [],
-                paragraphBuffer: [],
-                inList: false
-            };
-            
-            // First pass: identify sections and structure
-            const sections = identifySections(lines, patterns);
-            
-            // Second pass: intelligent content extraction
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) {
-                    // Empty line - process buffered paragraph
-                    if (context.paragraphBuffer.length > 0) {
-                        processParagraph(context.paragraphBuffer.join(' '), context, parsed, patterns);
-                        context.paragraphBuffer = [];
-                    }
-                    continue;
-                }
-                
-                // Update context based on line
-                updateContext(line, context, patterns, sections[i]);
-                
-                // Buffer line for paragraph processing
-                context.paragraphBuffer.push(line);
-            }
-            
-            // Process any remaining buffered content
-            if (context.paragraphBuffer.length > 0) {
-                processParagraph(context.paragraphBuffer.join(' '), context, parsed, patterns);
-            }
-            
-            // Third pass: intelligent entity extraction from unstructured text
-            extractEntitiesFromText(text, parsed, patterns);
-            
-            // Fourth pass: specialized magic item parsing
-            parseMagicItems(text, parsed);
-            
-            // Clean up and deduplicate
-            parsed.npcs = deduplicateByName(parsed.npcs);
-            parsed.encounters = deduplicateByName(parsed.encounters);
-            parsed.revelations = deduplicateByName(parsed.revelations, 'title');
-            parsed.items = deduplicateByName(parsed.items);
-            parsed.magicItems = deduplicateByName(parsed.magicItems);
-            
-            return parsed;
-        }
-        
-        function parseMagicItems(text, parsed) {
-            // Parse magic items in the format from the Promotion Magic Items document
-            // Format: # **Item Name**
-            //         *Wondrous item (rarity), requires attunement*
-            //         Description
-            //         **Feature.** Description
-            
-            const magicItemPattern = /^#\s+\*\*(.+?)\*\*\s*$([\s\S]*?)(?=^#\s+\*\*|$)/gm;
-            let match;
-            
-            while ((match = magicItemPattern.exec(text)) !== null) {
-                const name = match[1].trim();
-                const content = match[2].trim();
-                
-                // Extract rarity and attunement from italic line
-                const rarityMatch = content.match(/^\*(.+?)\*$/m);
-                let rarity = 'unknown';
-                let attunement = null;
-                let itemType = 'Wondrous item';
-                
-                if (rarityMatch) {
-                    const rarityLine = rarityMatch[1];
-                    
-                    // Extract item type
-                    const typeMatch = rarityLine.match(/^([^(]+?)\s*\(/);
-                    if (typeMatch) {
-                        itemType = typeMatch[1].trim();
-                    }
-                    
-                    // Extract rarity
-                    const rarityPattern = /\((common|uncommon|rare|very rare|legendary|artifact)\)/i;
-                    const rarityResult = rarityLine.match(rarityPattern);
-                    if (rarityResult) {
-                        rarity = rarityResult[1].toLowerCase();
-                    }
-                    
-                    // Extract attunement
-                    if (rarityLine.includes('requires attunement')) {
-                        const attunementMatch = rarityLine.match(/requires attunement(?: by (.+?))?$/);
-                        attunement = attunementMatch && attunementMatch[1] ? attunementMatch[1].trim() : true;
-                    }
-                }
-                
-                // Extract description (first paragraph after rarity line)
-                const descMatch = content.match(/^\*.*?\*\s*\n\n(.+?)(?=\n\n\*\*|$)/s);
-                const description = descMatch ? descMatch[1].trim() : '';
-                
-                // Extract charges info
-                let charges = null;
-                const chargesMatch = content.match(/Holds?\s+\*\*(\d+)\s+charges?\*\*/i);
-                if (chargesMatch) {
-                    const rechargeMatch = content.match(/regains?\s+\*\*(.+?)\*\*(?:\s+at\s+(\w+))?/i);
-                    charges = {
-                        max: parseInt(chargesMatch[1]),
-                        recharge: rechargeMatch ? rechargeMatch[1].trim() : 'unknown',
-                        timing: rechargeMatch && rechargeMatch[2] ? rechargeMatch[2] : null
-                    };
-                }
-                
-                // Extract features (bold headers with content)
-                const features = [];
-                const featurePattern = /\*\*(.+?)\.\*\*\s+(.+?)(?=\n\*\*|\n\n\*\*|$)/gs;
-                let featureMatch;
-                
-                while ((featureMatch = featurePattern.exec(content)) !== null) {
-                    const featureName = featureMatch[1].trim();
-                    const featureDesc = featureMatch[2].trim().replace(/\n/g, ' ');
-                    
-                    // Extract charge cost if present in feature name
-                    let chargeCost = null;
-                    const costMatch = featureName.match(/\((\d+)\s+charges?\)/i);
-                    if (costMatch) {
-                        chargeCost = parseInt(costMatch[1]);
-                    }
-                    
-                    // Extract action type
-                    let actionType = null;
-                    if (/\baction\b/i.test(featureDesc)) {
-                        actionType = 'Action';
-                    } else if (/\breaction\b/i.test(featureDesc)) {
-                        actionType = 'Reaction';
-                    } else if (/\bbonus action\b/i.test(featureDesc)) {
-                        actionType = 'Bonus Action';
-                    } else if (/\bpassive\b/i.test(featureName) || /\bpassive\b/i.test(featureDesc)) {
-                        actionType = 'Passive';
-                    }
-                    
-                    features.push({
-                        name: featureName,
-                        description: featureDesc,
-                        chargeCost: chargeCost,
-                        actionType: actionType
-                    });
-                }
-                
-                // Extract risk/drawback if present
-                let risk = null;
-                const riskMatch = content.match(/(?:risk|drawback|on a natural 1):\s*(.+?)(?=\n\*\*|\n\n|$)/is);
-                if (riskMatch) {
-                    risk = riskMatch[1].trim();
-                } else if (/natural 1/i.test(content)) {
-                    // Extract sentence containing "natural 1"
-                    const sentences = content.split(/[.!?]+/);
-                    for (const sentence of sentences) {
-                        if (/natural 1/i.test(sentence)) {
-                            risk = sentence.trim();
-                            break;
-                        }
-                    }
-                }
-                
-                parsed.magicItems.push({
-                    name: name,
-                    type: itemType,
-                    rarity: rarity,
-                    attunement: attunement,
-                    description: description,
-                    charges: charges,
-                    features: features,
-                    risk: risk
-                });
-            }
-        }
-        
-        function identifySections(lines, patterns) {
-            const sections = new Array(lines.length).fill(null);
-            let currentSection = null;
-            
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                const headerMatch = line.match(patterns.headers);
-                
-                if (headerMatch) {
-                    const headerText = headerMatch[1].toLowerCase();
-                    
-                    // Identify section type from header
-                    if (/npc|character|people|cast/i.test(headerText)) {
-                        currentSection = 'npcs';
-                    } else if (/encounter|combat|battle|fight/i.test(headerText)) {
-                        currentSection = 'encounters';
-                    } else if (/revelation|secret|twist|plot|mystery/i.test(headerText)) {
-                        currentSection = 'revelations';
-                    } else if (/item|loot|treasure|equipment|gear/i.test(headerText)) {
-                        currentSection = 'items';
-                    } else if (/plot hook|adventure hook|quest|mission/i.test(headerText)) {
-                        currentSection = 'plotHooks';
-                    } else if (/mechanic|rule|table|roll|system/i.test(headerText)) {
-                        currentSection = 'mechanics';
-                    } else if (/lore|history|background|legend|myth/i.test(headerText)) {
-                        currentSection = 'lore';
-                    } else if (/note|session|summary|recap/i.test(headerText)) {
-                        currentSection = 'notes';
-                    }
-                }
-                
-                sections[i] = currentSection;
-            }
-            
-            return sections;
-        }
-        
-        function updateContext(line, context, patterns, sectionHint) {
-            // Check for headers
-            const headerMatch = line.match(patterns.headers);
-            if (headerMatch) {
-                context.lastHeader = headerMatch[1];
-                context.currentSection = sectionHint;
-                return;
-            }
-            
-            // Check for list items
-            context.inList = patterns.bullets.test(line) || patterns.numbered.test(line);
-            
-            // Track proper nouns for entity recognition
-            const properNouns = line.match(patterns.properNouns);
-            if (properNouns) {
-                context.recentProperNouns = properNouns.slice(0, 5); // Keep last 5
-            }
-        }
-        
-        function processParagraph(text, context, parsed, patterns) {
-            // Determine content type based on patterns and context
-            const scores = {
-                npc: 0,
-                encounter: 0,
-                revelation: 0,
-                item: 0,
-                plotHook: 0,
-                mechanic: 0,
-                lore: 0,
-                note: 0
-            };
-            
-            // Score based on indicators
-            if (patterns.npcIndicators.test(text)) scores.npc += 3;
-            if (patterns.encounterIndicators.test(text)) scores.encounter += 3;
-            if (patterns.revelationIndicators.test(text)) scores.revelation += 3;
-            if (patterns.itemIndicators.test(text)) scores.item += 3;
-            if (patterns.plotHookIndicators.test(text)) scores.plotHook += 3;
-            if (patterns.mechanicsIndicators.test(text)) scores.mechanic += 3;
-            if (patterns.loreIndicators.test(text)) scores.lore += 3;
-            
-            // Score based on context
-            if (context.currentSection) {
-                scores[context.currentSection] += 5;
-            }
-            
-            // Score based on structure
-            if (context.inList) {
-                scores.npc += 1;
-                scores.item += 1;
-            }
-            
-            // Check for table patterns (boost mechanics score)
-            if (patterns.tablePattern.test(text)) {
-                scores.mechanic += 2;
-            }
-            
-            // Find highest score
-            const maxScore = Math.max(...Object.values(scores));
-            const contentType = Object.keys(scores).find(k => scores[k] === maxScore);
-            
-            // Extract based on type
-            if (maxScore >= 3) { // Threshold for classification
-                switch (contentType) {
-                    case 'npc':
-                        extractNPC(text, parsed, patterns, context);
-                        break;
-                    case 'encounter':
-                        extractEncounter(text, parsed, patterns, context);
-                        break;
-                    case 'revelation':
-                        extractRevelation(text, parsed, patterns, context);
-                        break;
-                    case 'item':
-                        extractItem(text, parsed, patterns, context);
-                        break;
-                    case 'plotHook':
-                        extractPlotHook(text, parsed, patterns, context);
-                        break;
-                    case 'mechanic':
-                        extractMechanic(text, parsed, patterns, context);
-                        break;
-                    case 'lore':
-                        extractLore(text, parsed, patterns, context);
-                        break;
-                    default:
-                        parsed.notes.push(text);
-                }
-            } else {
-                parsed.notes.push(text);
-            }
-        }
-        
-        function extractNPC(text, parsed, patterns, context) {
-            // Try to find name
-            let name = null;
-            
-            // Method 1: Name at start with separator
-            const nameMatch = text.match(patterns.npcNames);
-            if (nameMatch) {
-                name = nameMatch[1];
-            }
-            
-            // Method 2: Bold text (often names)
-            if (!name) {
-                const boldMatches = [...text.matchAll(patterns.bold)];
-                if (boldMatches.length > 0) {
-                    name = boldMatches[0][1];
-                }
-            }
-            
-            // Method 3: First proper noun
-            if (!name && context.recentProperNouns.length > 0) {
-                name = context.recentProperNouns[0];
-            }
-            
-            // Method 4: Use header as name
-            if (!name && context.lastHeader) {
-                name = context.lastHeader;
-            }
-            
-            if (!name) {
-                name = "Unnamed NPC";
-            }
-            
-            // Extract role
-            let role = null;
-            const rolePatterns = [
-                /(?:is a|is an|works as|serves as)\s+([^,.]+)/i,
-                /(?:role|job|occupation|position):\s*([^,.]+)/i,
-                /\b(king|queen|guard|merchant|wizard|priest|captain|leader|boss|villain|ally)\b/i
-            ];
-            
-            for (const pattern of rolePatterns) {
-                const match = text.match(pattern);
-                if (match) {
-                    role = match[1].trim();
-                    break;
-                }
-            }
-            
-            // Extract secret/hidden info
-            let secret = null;
-            const secretMatch = text.match(/(?:secret|hidden|doesn't know|unaware|actually|really):\s*([^.]+)/i);
-            if (secretMatch) {
-                secret = secretMatch[1].trim();
-            } else if (/\b(secret|hidden|doesn't know|unaware)\b/i.test(text)) {
-                // Extract sentence containing secret indicator
-                const sentences = text.split(/[.!?]+/);
-                for (const sentence of sentences) {
-                    if (/\b(secret|hidden|doesn't know|unaware|actually|really)\b/i.test(sentence)) {
-                        secret = sentence.trim();
-                        break;
-                    }
-                }
-            }
-            
-            parsed.npcs.push({
-                name: name,
-                role: role,
-                description: text.replace(patterns.bold, '$1'),
-                secret: secret
-            });
-        }
-        
-        function extractEncounter(text, parsed, patterns, context) {
-            let name = context.lastHeader || "Encounter";
-            
-            // Try to extract name from bold text or start of text
-            const boldMatches = [...text.matchAll(patterns.bold)];
-            if (boldMatches.length > 0) {
-                name = boldMatches[0][1];
-            }
-            
-            // Extract CR
-            let cr = null;
-            const crMatch = text.match(patterns.crPattern);
-            if (crMatch) {
-                cr = crMatch[1];
-            }
-            
-            // Determine type
-            let type = 'Combat';
-            const typeMatch = text.match(patterns.encounterTypes);
-            if (typeMatch) {
-                type = typeMatch[1].charAt(0).toUpperCase() + typeMatch[1].slice(1).toLowerCase();
-            }
-            
-            parsed.encounters.push({
-                name: name,
-                type: type,
-                cr: cr,
-                description: text.replace(patterns.bold, '$1')
-            });
-        }
-        
-        function extractRevelation(text, parsed, patterns, context) {
-            let title = context.lastHeader || "Revelation";
-            
-            // Try to extract title from bold text
-            const boldMatches = [...text.matchAll(patterns.bold)];
-            if (boldMatches.length > 0) {
-                title = boldMatches[0][1];
-            }
-            
-            // Extract timing
-            let when = 'TBD';
-            const timingMatch = text.match(patterns.timingIndicators);
-            if (timingMatch) {
-                when = timingMatch[0];
-            }
-            
-            parsed.revelations.push({
-                title: title,
-                when: when,
-                description: text.replace(patterns.bold, '$1')
-            });
-        }
-        
-        function extractItem(text, parsed, patterns, context) {
-            let name = context.lastHeader || "Item";
-            
-            // Try to extract name from bold text or start
-            const boldMatches = [...text.matchAll(patterns.bold)];
-            if (boldMatches.length > 0) {
-                name = boldMatches[0][1];
-            } else {
-                // First few words might be the name
-                const words = text.split(/\s+/);
-                if (words.length > 0) {
-                    name = words.slice(0, Math.min(4, words.length)).join(' ');
-                }
-            }
-            
-            parsed.items.push({
-                name: name,
-                description: text.replace(patterns.bold, '$1')
-            });
-        }
-        
-        function extractPlotHook(text, parsed, patterns, context) {
-            let title = context.lastHeader || "Plot Hook";
-            
-            // Try to extract title from bold text
-            const boldMatches = [...text.matchAll(patterns.bold)];
-            if (boldMatches.length > 0) {
-                title = boldMatches[0][1];
-            }
-            
-            // Extract trigger/condition if present
-            let trigger = null;
-            const triggerMatch = text.match(/(?:if|when|after|trigger):\s*([^.]+)/i);
-            if (triggerMatch) {
-                trigger = triggerMatch[1].trim();
-            }
-            
-            parsed.plotHooks.push({
-                title: title,
-                trigger: trigger,
-                description: text.replace(patterns.bold, '$1')
-            });
-        }
-        
-        function extractMechanic(text, parsed, patterns, context) {
-            let name = context.lastHeader || "Mechanic";
-            
-            // Try to extract name from bold text
-            const boldMatches = [...text.matchAll(patterns.bold)];
-            if (boldMatches.length > 0) {
-                name = boldMatches[0][1];
-            }
-            
-            // Extract DC if present
-            let dc = null;
-            const dcMatch = text.match(/DC\s*(\d+)/i);
-            if (dcMatch) {
-                dc = dcMatch[1];
-            }
-            
-            // Check if it's a table/roll
-            let isTable = patterns.tablePattern.test(text) || /\bd\d+\b/i.test(text);
-            
-            parsed.mechanics.push({
-                name: name,
-                dc: dc,
-                isTable: isTable,
-                description: text.replace(patterns.bold, '$1')
-            });
-        }
-        
-        function extractLore(text, parsed, patterns, context) {
-            let title = context.lastHeader || "Lore";
-            
-            // Try to extract title from bold text
-            const boldMatches = [...text.matchAll(patterns.bold)];
-            if (boldMatches.length > 0) {
-                title = boldMatches[0][1];
-            }
-            
-            // Determine category (history, legend, etc.)
-            let category = 'General';
-            if (/\b(history|historical)\b/i.test(text)) {
-                category = 'History';
-            } else if (/\b(legend|myth|mythical)\b/i.test(text)) {
-                category = 'Legend';
-            } else if (/\b(origin|beginning|creation)\b/i.test(text)) {
-                category = 'Origin';
-            } else if (/\b(ancient|old|elder)\b/i.test(text)) {
-                category = 'Ancient';
-            }
-            
-            parsed.lore.push({
-                title: title,
-                category: category,
-                description: text.replace(patterns.bold, '$1')
-            });
-        }
-        
-        function extractEntitiesFromText(text, parsed, patterns) {
-            // Look for standalone proper nouns that might be NPCs
-            const sentences = text.split(/[.!?]+/);
-            
-            for (const sentence of sentences) {
-                const trimmed = sentence.trim();
-                if (!trimmed) continue;
-                
-                // Look for patterns like "Name is/was/will be..."
-                const entityPattern = /\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\s+(is|was|will be|has|had|does|did|can|could|should|would)\b/g;
-                let match;
-                
-                while ((match = entityPattern.exec(trimmed)) !== null) {
-                    const potentialName = match[1];
-                    
-                    // Check if this looks like an NPC (has descriptive context)
-                    if (patterns.npcIndicators.test(trimmed) || 
-                        patterns.descriptions.test(trimmed) ||
-                        patterns.motivations.test(trimmed)) {
-                        
-                        // Check if we already have this NPC
-                        const exists = parsed.npcs.some(npc => 
-                            npc.name.toLowerCase().includes(potentialName.toLowerCase())
-                        );
-                        
-                        if (!exists) {
-                            parsed.npcs.push({
-                                name: potentialName,
-                                role: null,
-                                description: trimmed,
-                                secret: null
-                            });
-                        }
-                    }
-                }
-            }
-        }
-        
-        function deduplicateByName(items, nameField = 'name') {
-            const seen = new Map();
-            
-            for (const item of items) {
-                const key = item[nameField].toLowerCase().trim();
-                
-                if (seen.has(key)) {
-                    // Merge descriptions if both exist
-                    const existing = seen.get(key);
-                    if (item.description && existing.description !== item.description) {
-                        existing.description += ' ' + item.description;
-                    }
-                    // Merge other fields
-                    for (const field in item) {
-                        if (!existing[field] && item[field]) {
-                            existing[field] = item[field];
-                        }
-                    }
-                } else {
-                    seen.set(key, item);
-                }
-            }
-            
-            return Array.from(seen.values());
-        }
-
-        function displayParsedContent(parsed) {
-            const preview = document.getElementById('parsed-preview');
-            
-            let html = '<div class="parsed-content">';
-            html += '<h3 style="color: var(--nipple-gold); margin-bottom: 1rem;">📋 Parsed Content Preview</h3>';
-            
-            // NPCs
-            if (parsed.npcs.length > 0) {
-                html += '<div class="parsed-section">';
-                html += `<h4>NPCs (${parsed.npcs.length} found)</h4>`;
-                parsed.npcs.forEach(npc => {
-                    html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">`;
-                    html += `<strong>${npc.name}</strong>`;
-                    if (npc.role) html += ` - ${npc.role}`;
-                    if (npc.description) html += `<br><small>${npc.description.substring(0, 100)}${npc.description.length > 100 ? '...' : ''}</small>`;
-                    html += `</div>`;
-                });
-                html += '</div>';
-            }
-            
-            // Encounters
-            if (parsed.encounters.length > 0) {
-                html += '<div class="parsed-section">';
-                html += `<h4>Encounters (${parsed.encounters.length} found)</h4>`;
-                parsed.encounters.forEach(enc => {
-                    html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">`;
-                    html += `<strong>${enc.name}</strong>`;
-                    if (enc.cr) html += ` - CR ${enc.cr}`;
-                    if (enc.description) html += `<br><small>${enc.description.substring(0, 100)}${enc.description.length > 100 ? '...' : ''}</small>`;
-                    html += `</div>`;
-                });
-                html += '</div>';
-            }
-            
-            // Revelations
-            if (parsed.revelations.length > 0) {
-                html += '<div class="parsed-section">';
-                html += `<h4>Revelations (${parsed.revelations.length} found)</h4>`;
-                parsed.revelations.forEach(rev => {
-                    html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">`;
-                    html += `<strong>${rev.title}</strong>`;
-                    if (rev.when !== 'TBD') html += ` - ${rev.when}`;
-                    if (rev.description) html += `<br><small>${rev.description.substring(0, 100)}${rev.description.length > 100 ? '...' : ''}</small>`;
-                    html += `</div>`;
-                });
-                html += '</div>';
-            }
-            
-            // Items
-            if (parsed.items.length > 0) {
-                html += '<div class="parsed-section">';
-                html += `<h4>Items (${parsed.items.length} found)</h4>`;
-                parsed.items.forEach(item => {
-                    html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">`;
-                    html += `<strong>${item.name}</strong>`;
-                    if (item.description) html += `<br><small>${item.description.substring(0, 100)}${item.description.length > 100 ? '...' : ''}</small>`;
-                    html += `</div>`;
-                });
-                html += '</div>';
-            }
-            
-            // Magic Items
-            if (parsed.magicItems.length > 0) {
-                html += '<div class="parsed-section">';
-                html += `<h4>✨ Magic Items (${parsed.magicItems.length} found)</h4>`;
-                parsed.magicItems.forEach(item => {
-                    html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(212, 160, 23, 0.2); border: 1px solid var(--nipple-gold); border-radius: 5px;">`;
-                    html += `<strong>${item.name}</strong>`;
-                    html += ` <span style="background: var(--nipple-gold); color: var(--nipple-dark); padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.75rem;">${item.rarity.toUpperCase()}</span>`;
-                    if (item.attunement) {
-                        const attunementText = item.attunement === true ? 'Attunement' : `Attunement: ${item.attunement}`;
-                        html += ` <span style="background: var(--nipple-teal); color: white; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.75rem;">${attunementText}</span>`;
-                    }
-                    if (item.charges) {
-                        html += `<br><small>⚡ ${item.charges.max} charges (${item.charges.recharge}${item.charges.timing ? ' at ' + item.charges.timing : ''})</small>`;
-                    }
-                    if (item.description) html += `<br><small>${item.description.substring(0, 100)}${item.description.length > 100 ? '...' : ''}</small>`;
-                    if (item.features && item.features.length > 0) {
-                        html += `<br><small style="color: var(--nipple-gold);">🎯 ${item.features.length} features</small>`;
-                    }
-                    html += `</div>`;
-                });
-                html += '</div>';
-            }
-            
-            // Plot Hooks
-            if (parsed.plotHooks.length > 0) {
-                html += '<div class="parsed-section">';
-                html += `<h4>Plot Hooks (${parsed.plotHooks.length} found)</h4>`;
-                parsed.plotHooks.forEach(hook => {
-                    html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">`;
-                    html += `<strong>${hook.title}</strong>`;
-                    if (hook.trigger) html += ` - <em>Trigger: ${hook.trigger}</em>`;
-                    if (hook.description) html += `<br><small>${hook.description.substring(0, 100)}${hook.description.length > 100 ? '...' : ''}</small>`;
-                    html += `</div>`;
-                });
-                html += '</div>';
-            }
-            
-            // Mechanics
-            if (parsed.mechanics.length > 0) {
-                html += '<div class="parsed-section">';
-                html += `<h4>Mechanics (${parsed.mechanics.length} found)</h4>`;
-                parsed.mechanics.forEach(mech => {
-                    html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">`;
-                    html += `<strong>${mech.name}</strong>`;
-                    if (mech.dc) html += ` - DC ${mech.dc}`;
-                    if (mech.isTable) html += ` <span style="background: var(--nipple-gold); color: var(--nipple-dark); padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.8rem;">TABLE</span>`;
-                    if (mech.description) html += `<br><small>${mech.description.substring(0, 100)}${mech.description.length > 100 ? '...' : ''}</small>`;
-                    html += `</div>`;
-                });
-                html += '</div>';
-            }
-            
-            // Lore
-            if (parsed.lore.length > 0) {
-                html += '<div class="parsed-section">';
-                html += `<h4>Lore (${parsed.lore.length} found)</h4>`;
-                parsed.lore.forEach(loreItem => {
-                    html += `<div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">`;
-                    html += `<strong>${loreItem.title}</strong>`;
-                    if (loreItem.category !== 'General') html += ` - <em>${loreItem.category}</em>`;
-                    if (loreItem.description) html += `<br><small>${loreItem.description.substring(0, 100)}${loreItem.description.length > 100 ? '...' : ''}</small>`;
-                    html += `</div>`;
-                });
-                html += '</div>';
-            }
-            
-            // Notes
-            if (parsed.notes.length > 0) {
-                html += '<div class="parsed-section">';
-                html += `<h4>Session Notes (${parsed.notes.length} lines)</h4>`;
-                html += `<div style="max-height: 100px; overflow-y: auto; padding: 0.5rem; background: rgba(13, 31, 45, 0.8); border-radius: 5px;">`;
-                html += parsed.notes.slice(0, 10).join('<br>');
-                if (parsed.notes.length > 10) html += '<br>...';
-                html += `</div>`;
-                html += '</div>';
-            }
-            
-            html += '</div>';
-            
-            // Import options
-            html += '<div class="import-options">';
-            html += '<h3 style="color: var(--nipple-gold); margin: 1rem 0;">Select What to Import:</h3>';
-            
-            if (parsed.npcs.length > 0) {
-                html += `<div class="import-option">
-                    <input type="checkbox" id="import-npcs" checked>
-                    <label for="import-npcs">Import ${parsed.npcs.length} NPCs</label>
-                </div>`;
-            }
-            
-            if (parsed.encounters.length > 0) {
-                html += `<div class="import-option">
-                    <input type="checkbox" id="import-encounters" checked>
-                    <label for="import-encounters">Import ${parsed.encounters.length} Encounters</label>
-                </div>`;
-            }
-            
-            if (parsed.revelations.length > 0) {
-                html += `<div class="import-option">
-                    <input type="checkbox" id="import-revelations" checked>
-                    <label for="import-revelations">Import ${parsed.revelations.length} Revelations</label>
-                </div>`;
-            }
-            
-            if (parsed.items.length > 0) {
-                html += `<div class="import-option">
-                    <input type="checkbox" id="import-items" checked>
-                    <label for="import-items">Import ${parsed.items.length} Items</label>
-                </div>`;
-            }
-            
-            if (parsed.magicItems.length > 0) {
-                html += `<div class="import-option">
-                    <input type="checkbox" id="import-magicitems" checked>
-                    <label for="import-magicitems">✨ Import ${parsed.magicItems.length} Magic Items</label>
-                </div>`;
-            }
-            
-            if (parsed.plotHooks.length > 0) {
-                html += `<div class="import-option">
-                    <input type="checkbox" id="import-plothooks" checked>
-                    <label for="import-plothooks">Import ${parsed.plotHooks.length} Plot Hooks</label>
-                </div>`;
-            }
-            
-            if (parsed.mechanics.length > 0) {
-                html += `<div class="import-option">
-                    <input type="checkbox" id="import-mechanics" checked>
-                    <label for="import-mechanics">Import ${parsed.mechanics.length} Mechanics</label>
-                </div>`;
-            }
-            
-            if (parsed.lore.length > 0) {
-                html += `<div class="import-option">
-                    <input type="checkbox" id="import-lore" checked>
-                    <label for="import-lore">Import ${parsed.lore.length} Lore</label>
-                </div>`;
-            }
-            
-            if (parsed.notes.length > 0) {
-                html += `<div class="import-option">
-                    <input type="checkbox" id="import-notes" checked>
-                    <label for="import-notes">Add to Session Notes</label>
-                </div>`;
-            }
-            
-            html += '</div>';
-            
-            html += '<div class="button-group">';
-            html += '<button class="gold" onclick="importParsedContent()">Import Selected</button>';
-            html += '<button onclick="closeUploadModal()">Cancel</button>';
-            html += '</div>';
-            
-            preview.innerHTML = html;
-            document.getElementById('parse-status').innerHTML = '';
-        }
-
-        function importParsedContent() {
-            if (!parsedDocument) return;
-            
-            let imported = [];
-            
-            // Import NPCs
-            if (document.getElementById('import-npcs')?.checked) {
-                campaignData.npcs.push(...parsedDocument.npcs);
-                imported.push(`${parsedDocument.npcs.length} NPCs`);
-            }
-            
-            // Import Encounters
-            if (document.getElementById('import-encounters')?.checked) {
-                campaignData.preparedEncounters.push(...parsedDocument.encounters);
-                imported.push(`${parsedDocument.encounters.length} Encounters`);
-            }
-            
-            // Import Revelations
-            if (document.getElementById('import-revelations')?.checked) {
-                campaignData.revelations.push(...parsedDocument.revelations);
-                imported.push(`${parsedDocument.revelations.length} Revelations`);
-            }
-            
-            // Import Items
-            if (document.getElementById('import-items')?.checked) {
-                if (!campaignData.items) campaignData.items = [];
-                campaignData.items.push(...parsedDocument.items);
-                imported.push(`${parsedDocument.items.length} Items`);
-            }
-            
-            // Import Magic Items
-            if (document.getElementById('import-magicitems')?.checked) {
-                if (!campaignData.magicItems) campaignData.magicItems = [];
-                campaignData.magicItems.push(...parsedDocument.magicItems);
-                imported.push(`${parsedDocument.magicItems.length} Magic Items`);
-            }
-            
-            // Import Plot Hooks
-            if (document.getElementById('import-plothooks')?.checked) {
-                if (!campaignData.plotHooks) campaignData.plotHooks = [];
-                campaignData.plotHooks.push(...parsedDocument.plotHooks);
-                imported.push(`${parsedDocument.plotHooks.length} Plot Hooks`);
-            }
-            
-            // Import Mechanics
-            if (document.getElementById('import-mechanics')?.checked) {
-                if (!campaignData.mechanics) campaignData.mechanics = [];
-                campaignData.mechanics.push(...parsedDocument.mechanics);
-                imported.push(`${parsedDocument.mechanics.length} Mechanics`);
-            }
-            
-            // Import Lore
-            if (document.getElementById('import-lore')?.checked) {
-                if (!campaignData.lore) campaignData.lore = [];
-                campaignData.lore.push(...parsedDocument.lore);
-                imported.push(`${parsedDocument.lore.length} Lore`);
-            }
-            
-            // Import Notes
-            if (document.getElementById('import-notes')?.checked) {
-                const currentNotes = document.getElementById('session-notes').value;
-                const newNotes = parsedDocument.notes.join('\n');
-                document.getElementById('session-notes').value = 
-                    currentNotes + (currentNotes ? '\n\n--- Imported Notes ---\n' : '') + newNotes;
-                imported.push('Session Notes');
-            }
-            
-            saveToLocalStorage();
-            populateContent();
-            closeUploadModal();
-            
-            alert(`Successfully imported: ${imported.join(', ')}`);
-        }
-
-        // Core functions
-        function toggleEditor() {
-            editorMode = !editorMode;
-            document.body.classList.toggle('editor-mode');
-            document.querySelector('.editor-toggle').textContent = 
-                editorMode ? '👁️ View Mode' : '📝 Editor Mode';
-        }
-
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.remove('active');
-            });
-
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        function saveToLocalStorage() {
-            localStorage.setItem('nipple-campaign', JSON.stringify(campaignData));
-        }
-
-        function loadFromLocalStorage() {
-            const saved = localStorage.getItem('nipple-campaign');
-            if (saved) {
-                campaignData = JSON.parse(saved);
-            }
-        }
-
-        function exportData() {
-            const dataStr = JSON.stringify(campaignData, null, 2);
-            const blob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'nipple-campaign-data.json';
-            link.click();
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    campaignData = JSON.parse(e.target.result);
-                    saveToLocalStorage();
-                    populateContent();
-                    alert('Campaign data imported successfully!');
-                } catch (error) {
-                    alert('Error importing data: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function saveNotes() {
-            localStorage.setItem('nipple-notes', document.getElementById('session-notes').value);
-            alert('Notes saved!');
-        }
-
-        function populateContent() {
-            // Basic population of content
-            document.getElementById('campaign-info').innerHTML = `
-                <p><strong>Setting:</strong> ${campaignData.overview.setting}</p>
-                <p><strong>Theme:</strong> ${campaignData.overview.theme}</p>
-                <p><strong>Current Level:</strong> ${campaignData.overview.currentLevel}</p>
-            `;
-            
-            // Populate current act
-            const act = campaignData.acts.find(a => a.id === campaignData.overview.currentAct);
-            if (act) {
-                document.getElementById('current-act').innerHTML = `
-                    <div style="background: rgba(42, 127, 127, 0.2); border: 2px solid var(--nipple-teal); border-radius: 8px; padding: 1rem;">
-                        <h3>${act.name}</h3>
-                        <p><em>${act.tone}</em></p>
-                        <p><strong>Levels:</strong> ${act.levels}</p>
-                        <p>${act.description}</p>
-                    </div>
-                `;
-            }
-            
-            // Populate characters
-            const pcGrid = document.getElementById('pc-grid');
-            if (campaignData.playerCharacters && pcGrid) {
-                pcGrid.innerHTML = campaignData.playerCharacters.map(pc => `
-                    <div class="character-card">
-                        <h3>${pc.name}</h3>
-                        <div class="stat-row">
-                            <span>Player:</span>
-                            <span>${pc.player}</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>Class:</span>
-                            <span>${pc.class}</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>Level:</span>
-                            <span>${pc.level}</span>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            
-            // Populate NPCs
-            const npcList = document.getElementById('npc-list');
-            if (campaignData.npcs && npcList) {
-                npcList.innerHTML = campaignData.npcs.map(npc => `
-                    <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
-                        <h3>${npc.name}</h3>
-                        ${npc.role ? `<p><strong>Role:</strong> ${npc.role}</p>` : ''}
-                        <p>${npc.description}</p>
-                        ${npc.secret ? `<p><em>Secret: ${npc.secret}</em></p>` : ''}
-                    </div>
-                `).join('');
-            }
-            
-            // Populate act progression
-            const actProg = document.getElementById('act-progression');
-            if (actProg) {
-                actProg.innerHTML = campaignData.acts.map(a => `
-                    <div style="background: rgba(42, 127, 127, 0.2); border: 2px solid var(--nipple-teal); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-                        <h3>${a.name} ${a.id === campaignData.overview.currentAct ? '<span style="background: var(--nipple-teal); color: white; padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.85rem; margin-left: 0.5rem;">Current</span>' : ''}</h3>
-                        <p><strong>Levels:</strong> ${a.levels} | <strong>Tone:</strong> ${a.tone}</p>
-                        <p>${a.description}</p>
-                    </div>
-                `).join('');
-            }
-            
-            // Populate revelations
-            const revelations = document.getElementById('revelations');
-            if (revelations && campaignData.revelations) {
-                revelations.innerHTML = campaignData.revelations.map(rev => `
-                    <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
-                        <h3>${rev.title}</h3>
-                        <p><strong>When:</strong> ${rev.when}</p>
-                        <p>${rev.description}</p>
-                    </div>
-                `).join('');
-            }
-            
-            // Populate encounters
-            const encounters = document.getElementById('prepared-encounters');
-            if (encounters && campaignData.preparedEncounters) {
-                encounters.innerHTML = campaignData.preparedEncounters.map(enc => `
-                    <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
-                        <h3>${enc.name}</h3>
-                        <p><strong>Type:</strong> ${enc.type} | <strong>CR:</strong> ${enc.cr || 'N/A'}</p>
-                        <p>${enc.description}</p>
-                    </div>
-                `).join('');
-            }
-            
-            // Populate quests
-            const questList = document.getElementById('quest-list');
-            if (questList && campaignData.quests) {
-                const activeQuests = campaignData.quests.filter(q => q.status === 'active');
-                if (activeQuests.length === 0) {
-                    questList.innerHTML = '<p style="text-align: center; color: var(--nipple-teal); padding: 2rem;">No active quests</p>';
-                } else {
-                    questList.innerHTML = activeQuests.map(quest => `
-                        <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
-                            <h3>${quest.title}</h3>
-                            <p><strong>Quest Giver:</strong> ${quest.giver}</p>
-                            ${quest.rewards ? `<p><strong>Rewards:</strong> ${quest.rewards}</p>` : ''}
-                            ${quest.objectives && quest.objectives.length > 0 ? `
-                                <div style="margin-top: 0.5rem;">
-                                    <strong>Objectives:</strong>
-                                    ${quest.objectives.map((obj, i) => `
-                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
-                                            <input type="checkbox" ${obj.completed ? 'checked' : ''} onchange="toggleObjective(${quest.id}, ${i})">
-                                            <span style="${obj.completed ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${obj.description}</span>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            ` : ''}
-                            ${quest.notes ? `<p style="margin-top: 0.5rem;"><em>${quest.notes}</em></p>` : ''}
-                            <div style="margin-top: 0.5rem; display: flex; gap: 0.25rem;">
-                                <button class="small" onclick="addObjective(${quest.id})">➕ Add Objective</button>
-                                <button class="small gold" onclick="completeQuest(${quest.id})">✓ Complete</button>
-                                <button class="small danger" onclick="deleteQuest(${quest.id})">🗑️</button>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            }
-            
-            // Populate factions
-            const factionList = document.getElementById('faction-list');
-            if (factionList && campaignData.factions) {
-                if (campaignData.factions.length === 0) {
-                    factionList.innerHTML = '<p style="text-align: center; color: var(--nipple-teal); padding: 2rem;">No factions tracked</p>';
-                } else {
-                    factionList.innerHTML = campaignData.factions.map((faction, i) => {
-                        const repColor = faction.reputation >= 5 ? 'var(--nipple-gold)' : 
-                                        faction.reputation >= 0 ? 'var(--nipple-teal)' : 
-                                        'var(--nipple-red)';
-                        return `
-                            <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid ${repColor}; border-radius: 5px;">
-                                <h3>${faction.name}</h3>
-                                <div style="display: flex; align-items: center; gap: 1rem; margin: 0.5rem 0;">
-                                    <span><strong>Reputation:</strong></span>
-                                    <button class="small" onclick="adjustReputation(${i}, -1)">-</button>
-                                    <span style="color: ${repColor}; font-weight: bold; min-width: 3rem; text-align: center;">${faction.reputation}</span>
-                                    <button class="small" onclick="adjustReputation(${i}, 1)">+</button>
-                                    <span style="background: ${repColor}; color: var(--nipple-dark); padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.85rem;">${faction.attitude}</span>
-                                </div>
-                                ${faction.goals ? `<p><strong>Goals:</strong> ${faction.goals}</p>` : ''}
-                                ${faction.notes ? `<p><em>${faction.notes}</em></p>` : ''}
-                                <div style="margin-top: 0.5rem;">
-                                    <button class="small danger" onclick="deleteFaction(${i})">🗑️ Delete</button>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            }
-            
-            // Populate locations
-            const locationList = document.getElementById('location-list');
-            if (locationList && campaignData.locations) {
-                if (campaignData.locations.length === 0) {
-                    locationList.innerHTML = '<p style="text-align: center; color: var(--nipple-teal); padding: 2rem;">No locations recorded</p>';
-                } else {
-                    locationList.innerHTML = campaignData.locations.map((loc, i) => `
-                        <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
-                            <h3>${loc.name}</h3>
-                            <p><strong>Type:</strong> ${loc.type}</p>
-                            ${loc.description ? `<p>${loc.description}</p>` : ''}
-                            ${loc.notes ? `<p><em>${loc.notes}</em></p>` : ''}
-                            <div style="margin-top: 0.5rem;">
-                                <button class="small danger" onclick="deleteLocation(${i})">🗑️ Delete</button>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            }
-            
-            // Populate party resources
-            const partyResources = document.getElementById('party-resources');
-            if (partyResources) {
-                if (!campaignData.partyResources) {
-                    campaignData.partyResources = {
-                        credits: 1250,
-                        shipFuel: '75%',
-                        supplies: 'Good',
-                        cargo: []
-                    };
-                }
-                partyResources.innerHTML = `
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                        <div style="background: rgba(42, 127, 127, 0.2); padding: 1rem; border-radius: 5px;">
-                            <strong>Credits:</strong>
-                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
-                                <input type="number" value="${campaignData.partyResources.credits}" onchange="updateResources('credits', parseInt(this.value))" style="width: 100px;">
-                            </div>
-                        </div>
-                        <div style="background: rgba(42, 127, 127, 0.2); padding: 1rem; border-radius: 5px;">
-                            <strong>Ship Fuel:</strong>
-                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
-                                <input type="text" value="${campaignData.partyResources.shipFuel}" onchange="updateResources('shipFuel', this.value)" style="width: 100px;">
-                            </div>
-                        </div>
-                        <div style="background: rgba(42, 127, 127, 0.2); padding: 1rem; border-radius: 5px;">
-                            <strong>Supplies:</strong>
-                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
-                                <select onchange="updateResources('supplies', this.value)" style="width: 100px;">
-                                    <option ${campaignData.partyResources.supplies === 'Excellent' ? 'selected' : ''}>Excellent</option>
-                                    <option ${campaignData.partyResources.supplies === 'Good' ? 'selected' : ''}>Good</option>
-                                    <option ${campaignData.partyResources.supplies === 'Low' ? 'selected' : ''}>Low</option>
-                                    <option ${campaignData.partyResources.supplies === 'Critical' ? 'selected' : ''}>Critical</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    ${campaignData.partyResources.cargo && campaignData.partyResources.cargo.length > 0 ? `
-                        <div style="margin-top: 1rem;">
-                            <strong>Current Cargo:</strong>
-                            ${campaignData.partyResources.cargo.map(c => `
-                                <div style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">
-                                    <strong>${c.item}</strong> → ${c.destination} (${c.value})
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                `;
-            }
-            
-            // Populate loot
-            const lootList = document.getElementById('loot-list');
-            if (lootList && campaignData.loot) {
-                if (campaignData.loot.length === 0) {
-                    lootList.innerHTML = '<p style="text-align: center; color: var(--nipple-teal); padding: 2rem;">No loot tracked</p>';
-                } else {
-                    lootList.innerHTML = campaignData.loot.map((item, i) => `
-                        <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid ${item.distributed ? 'var(--nipple-teal)' : 'var(--nipple-gold)'}; border-radius: 5px; ${item.distributed ? 'opacity: 0.6;' : ''}">
-                            <div style="display: flex; justify-content: space-between; align-items: start;">
-                                <div style="flex: 1;">
-                                    <h3 style="${item.distributed ? 'text-decoration: line-through;' : ''}">${item.item} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</h3>
-                                    ${item.value ? `<p><strong>Value:</strong> ${item.value}</p>` : ''}
-                                    ${item.location ? `<p><strong>Found:</strong> ${item.location}</p>` : ''}
-                                    ${item.notes ? `<p><em>${item.notes}</em></p>` : ''}
-                                </div>
-                                <div style="display: flex; gap: 0.25rem; flex-direction: column;">
-                                    <button class="small ${item.distributed ? '' : 'gold'}" onclick="toggleDistributed(${i})">
-                                        ${item.distributed ? '↩️ Undistribute' : '✓ Distribute'}
-                                    </button>
-                                    <button class="small danger" onclick="deleteLoot(${i})">🗑️</button>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            }
-            
-            // Populate timeline
-            const timelineList = document.getElementById('timeline-list');
-            if (timelineList && campaignData.timeline) {
-                if (campaignData.timeline.length === 0) {
-                    timelineList.innerHTML = '<p style="text-align: center; color: var(--nipple-teal); padding: 2rem;">No timeline events</p>';
-                } else {
-                    timelineList.innerHTML = campaignData.timeline.map((event, i) => {
-                        const act = campaignData.acts.find(a => a.id === event.act);
-                        return `
-                            <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
-                                <div style="display: flex; justify-content: space-between; align-items: start;">
-                                    <div style="flex: 1;">
-                                        <h3>${event.date}</h3>
-                                        <p>${event.event}</p>
-                                        ${act ? `<p style="font-size: 0.85rem; color: var(--nipple-teal); margin-top: 0.25rem;">${act.name}</p>` : ''}
-                                        ${event.notes ? `<p style="margin-top: 0.5rem;"><em>${event.notes}</em></p>` : ''}
-                                    </div>
-                                    <button class="small danger" onclick="deleteTimelineEvent(${i})">🗑️</button>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            }
-            
-            // Load saved notes
-            const savedNotes = localStorage.getItem('nipple-notes');
-            if (savedNotes) {
-                document.getElementById('session-notes').value = savedNotes;
-            }
-        }
-
-        // Combat Tracker Functions
-        let combatants = [];
-        let currentTurn = 0;
-        let combatActive = false;
-
-        function addCombatant() {
-            const name = prompt('Combatant name:');
-            if (!name) return;
-            
-            const initiative = prompt('Initiative roll:', '10');
-            const hp = prompt('Hit Points:', '10');
-            const ac = prompt('Armor Class:', '10');
-            
-            combatants.push({
-                name: name,
-                initiative: parseInt(initiative) || 10,
-                hp: parseInt(hp) || 10,
-                maxHp: parseInt(hp) || 10,
-                ac: parseInt(ac) || 10,
-                conditions: []
-            });
-            
-            updateInitiativeList();
-        }
-
-        function startCombat() {
-            if (combatants.length === 0) {
-                alert('Add combatants first!');
-                return;
-            }
-            
-            // Sort by initiative
-            combatants.sort((a, b) => b.initiative - a.initiative);
-            combatActive = true;
-            currentTurn = 0;
-            updateInitiativeList();
-        }
-
-        function nextTurn() {
-            if (!combatActive || combatants.length === 0) return;
-            
-            currentTurn = (currentTurn + 1) % combatants.length;
-            updateInitiativeList();
-        }
-
-        function clearCombat() {
-            if (confirm('Clear all combatants?')) {
-                combatants = [];
-                currentTurn = 0;
-                combatActive = false;
-                updateInitiativeList();
-            }
-        }
-
-        function updateInitiativeList() {
-            const list = document.getElementById('initiative-list');
-            if (combatants.length === 0) {
-                list.innerHTML = '<p style="text-align: center; color: var(--nipple-teal); padding: 2rem;">No combatants added yet</p>';
-                return;
-            }
-            
-            list.innerHTML = combatants.map((c, i) => {
-                const isActive = combatActive && i === currentTurn;
-                return `
-                    <div style="background: ${isActive ? 'rgba(212, 160, 23, 0.3)' : 'rgba(42, 127, 127, 0.2)'}; 
-                                border: 2px solid ${isActive ? 'var(--nipple-gold)' : 'var(--nipple-teal)'}; 
-                                border-radius: 8px; padding: 1rem; margin-bottom: 0.5rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                            <div style="flex: 1;">
-                                <h3 style="color: var(--nipple-gold); margin: 0;">${c.name} ${isActive ? '⚔️' : ''}</h3>
-                                <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
-                                    <span>Init: <strong>${c.initiative}</strong></span>
-                                    <span>HP: <strong>${c.hp}/${c.maxHp}</strong></span>
-                                    <span>AC: <strong>${c.ac}</strong></span>
-                                </div>
-                            </div>
-                            <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
-                                <button class="small" onclick="adjustHP(${i}, -1)">-1 HP</button>
-                                <button class="small" onclick="adjustHP(${i}, 1)">+1 HP</button>
-                                <button class="small danger" onclick="removeCombatant(${i})">Remove</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function adjustHP(index, amount) {
-            combatants[index].hp = Math.max(0, Math.min(combatants[index].maxHp, combatants[index].hp + amount));
-            updateInitiativeList();
-        }
-
-        function removeCombatant(index) {
-            combatants.splice(index, 1);
-            if (currentTurn >= combatants.length) currentTurn = 0;
-            updateInitiativeList();
-        }
-
-        // Quick Add PCs to Combat
-        function quickAddPCs() {
-            if (!campaignData.playerCharacters || campaignData.playerCharacters.length === 0) {
-                alert('No player characters found! Add some characters first in the Characters tab.');
-                return;
-            }
-            
-            // Create modal HTML
-            let html = '<div style="max-height: 400px; overflow-y: auto;">';
-            html += '<h3 style="color: var(--nipple-gold); margin-bottom: 1rem;">⚡ Quick Add Player Characters</h3>';
-            html += '<p style="margin-bottom: 1rem;">Select characters to add to combat. Their HP and AC will be auto-filled from character data.</p>';
-            
-            html += '<div style="display: grid; gap: 0.5rem;">';
-            campaignData.playerCharacters.forEach((pc, i) => {
-                html += `<div style="background: rgba(42, 127, 127, 0.2); border: 2px solid var(--nipple-teal); border-radius: 5px; padding: 0.75rem;">`;
-                html += `<label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">`;
-                html += `<input type="checkbox" id="pc-select-${i}" style="width: auto; margin: 0;">`;
-                html += `<div style="flex: 1;">`;
-                html += `<strong style="color: var(--nipple-gold);">${pc.name}</strong>`;
-                html += `<div style="font-size: 0.9rem; color: var(--nipple-light); margin-top: 0.25rem;">`;
-                html += `${pc.class} ${pc.level} | HP: ${pc.hp} | AC: ${pc.ac}`;
-                html += `</div>`;
-                html += `</div>`;
-                html += `</label>`;
-                html += `</div>`;
-            });
-            html += '</div>';
-            html += '</div>';
-            
-            const modal = document.createElement('div');
-            modal.className = 'modal active';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    ${html}
-                    <div class="button-group">
-                        <button class="gold" onclick="addSelectedPCsToCombat(this.closest('.modal'))">Add to Combat</button>
-                        <button onclick="this.closest('.modal').remove()">Cancel</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        function addSelectedPCsToCombat(modal) {
-            const selectedPCs = [];
-            
-            // Collect selected PCs
-            campaignData.playerCharacters.forEach((pc, i) => {
-                const checkbox = document.getElementById(`pc-select-${i}`);
-                if (checkbox && checkbox.checked) {
-                    selectedPCs.push({...pc, index: i});
-                }
-            });
-            
-            if (selectedPCs.length === 0) {
-                alert('Please select at least one character!');
-                return;
-            }
-            
-            // Close modal
-            modal.remove();
-            
-            // Prompt for initiatives
-            let initiativePrompt = 'Enter initiative rolls for:\n\n';
-            selectedPCs.forEach(pc => {
-                initiativePrompt += `${pc.name}: `;
-            });
-            initiativePrompt += '\n\nEnter as comma-separated values (e.g., "15, 12, 18")';
-            
-            const initiativesInput = prompt(initiativePrompt);
-            if (!initiativesInput) return;
-            
-            const initiatives = initiativesInput.split(',').map(i => parseInt(i.trim()) || 10);
-            
-            // Add each PC to combat
-            selectedPCs.forEach((pc, i) => {
-                const initiative = initiatives[i] || 10;
-                
-                combatants.push({
-                    name: pc.name,
-                    initiative: initiative,
-                    hp: pc.hp,
-                    maxHp: pc.hp,
-                    ac: pc.ac,
-                    conditions: []
-                });
-            });
-            
-            updateInitiativeList();
-            alert(`Added ${selectedPCs.length} character(s) to combat!`);
-        }
-
-        // Dice Roller Functions
-        let diceHistory = [];
-
-        function rollDice(sides) {
-            const result = Math.floor(Math.random() * sides) + 1;
-            const roll = {
-                dice: `1d${sides}`,
-                result: result,
-                timestamp: new Date().toLocaleTimeString()
-            };
-            diceHistory.unshift(roll);
-            if (diceHistory.length > 10) diceHistory.pop();
-            displayDiceResults();
-        }
-
-        function rollCustomDice() {
-            const count = parseInt(document.getElementById('dice-count').value) || 1;
-            const sides = parseInt(document.getElementById('dice-sides').value) || 20;
-            const modifier = parseInt(document.getElementById('dice-modifier').value) || 0;
-            
-            const rolls = [];
-            let total = 0;
-            
-            for (let i = 0; i < count; i++) {
-                const roll = Math.floor(Math.random() * sides) + 1;
-                rolls.push(roll);
-                total += roll;
-            }
-            
-            total += modifier;
-            
-            const roll = {
-                dice: `${count}d${sides}${modifier !== 0 ? (modifier > 0 ? '+' : '') + modifier : ''}`,
-                rolls: rolls,
-                modifier: modifier,
-                result: total,
-                timestamp: new Date().toLocaleTimeString()
-            };
-            
-            diceHistory.unshift(roll);
-            if (diceHistory.length > 10) diceHistory.pop();
-            displayDiceResults();
-        }
-
-        function displayDiceResults() {
-            const resultsDiv = document.getElementById('dice-results');
-            if (diceHistory.length === 0) {
-                resultsDiv.innerHTML = '<p style="text-align: center; color: var(--nipple-teal);">No rolls yet</p>';
-                return;
-            }
-            
-            resultsDiv.innerHTML = diceHistory.map(roll => {
-                let html = `<div style="padding: 0.5rem; margin-bottom: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">`;
-                html += `<div style="display: flex; justify-content: space-between; align-items: center;">`;
-                html += `<span><strong>${roll.dice}</strong></span>`;
-                html += `<span style="color: var(--nipple-gold); font-size: 1.2rem; font-weight: bold;">${roll.result}</span>`;
-                html += `</div>`;
-                if (roll.rolls) {
-                    html += `<div style="font-size: 0.85rem; color: var(--nipple-teal); margin-top: 0.25rem;">`;
-                    html += `Rolls: [${roll.rolls.join(', ')}]${roll.modifier !== 0 ? ` ${roll.modifier > 0 ? '+' : ''}${roll.modifier}` : ''}`;
-                    html += `</div>`;
-                }
-                html += `<div style="font-size: 0.75rem; color: rgba(232, 244, 248, 0.6); margin-top: 0.25rem;">${roll.timestamp}</div>`;
-                html += `</div>`;
-                return html;
-            }).join('');
-        }
-
-        // Character Management Functions
-        function addPlayerCharacter() {
-            const name = prompt('Character name:');
-            if (!name) return;
-            
-            const player = prompt('Player name:');
-            const charClass = prompt('Class:');
-            const level = prompt('Level:', '1');
-            const hp = prompt('Hit Points:', '10');
-            const ac = prompt('Armor Class:', '10');
-            
-            if (!campaignData.playerCharacters) campaignData.playerCharacters = [];
-            
-            campaignData.playerCharacters.push({
-                name: name,
-                player: player || 'Unknown',
-                class: charClass || 'Unknown',
-                level: parseInt(level) || 1,
-                hp: parseInt(hp) || 10,
-                ac: parseInt(ac) || 10
-            });
-            
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        function editCharacter(index) {
-            const pc = campaignData.playerCharacters[index];
-            
-            const name = prompt('Character name:', pc.name);
-            if (name === null) return;
-            
-            const player = prompt('Player name:', pc.player);
-            const charClass = prompt('Class:', pc.class);
-            const level = prompt('Level:', pc.level);
-            const hp = prompt('Hit Points:', pc.hp);
-            const ac = prompt('Armor Class:', pc.ac);
-            
-            campaignData.playerCharacters[index] = {
-                name: name || pc.name,
-                player: player || pc.player,
-                class: charClass || pc.class,
-                level: parseInt(level) || pc.level,
-                hp: parseInt(hp) || pc.hp,
-                ac: parseInt(ac) || pc.ac
-            };
-            
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        function deleteCharacter(index) {
-            if (confirm(`Delete ${campaignData.playerCharacters[index].name}?`)) {
-                campaignData.playerCharacters.splice(index, 1);
-                saveToLocalStorage();
-                populateContent();
-            }
-        }
-
-        // Act Management Functions
-        function addCustomAct() {
-            const name = prompt('Act name:');
-            if (!name) return;
-            
-            const levels = prompt('Level range (e.g., "1-4"):', '1-4');
-            const tone = prompt('Tone/Theme:');
-            const description = prompt('Description:');
-            
-            const newId = Math.max(...campaignData.acts.map(a => a.id)) + 1;
-            
-            campaignData.acts.push({
-                id: newId,
-                name: name,
-                levels: levels || '1-4',
-                tone: tone || 'Custom',
-                description: description || 'Custom act'
-            });
-            
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        function editAct(id) {
-            const act = campaignData.acts.find(a => a.id === id);
-            if (!act) return;
-            
-            const name = prompt('Act name:', act.name);
-            if (name === null) return;
-            
-            const levels = prompt('Level range:', act.levels);
-            const tone = prompt('Tone/Theme:', act.tone);
-            const description = prompt('Description:', act.description);
-            
-            act.name = name || act.name;
-            act.levels = levels || act.levels;
-            act.tone = tone || act.tone;
-            act.description = description || act.description;
-            
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        function deleteAct(id) {
-            const act = campaignData.acts.find(a => a.id === id);
-            if (confirm(`Delete ${act.name}?`)) {
-                campaignData.acts = campaignData.acts.filter(a => a.id !== id);
-                saveToLocalStorage();
-                populateContent();
-            }
-        }
-
-        function setCurrentAct(id) {
-            campaignData.overview.currentAct = id;
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        // Session History Functions
-        function saveSessionHistory() {
-            if (!campaignData.sessionHistory) campaignData.sessionHistory = [];
-            
-            const sessionNumber = campaignData.sessionHistory.length + 1;
-            const date = new Date().toLocaleDateString();
-            const notes = document.getElementById('session-notes').value;
-            
-            if (!notes.trim()) {
-                alert('Please add some session notes first!');
-                return;
-            }
-            
-            campaignData.sessionHistory.push({
-                sessionNumber: sessionNumber,
-                date: date,
-                level: campaignData.overview.currentLevel,
-                act: campaignData.overview.currentAct,
-                notes: notes
-            });
-            
-            // Clear current notes
-            document.getElementById('session-notes').value = '';
-            localStorage.setItem('nipple-notes', '');
-            
-            saveToLocalStorage();
-            alert(`Session ${sessionNumber} saved to history!`);
-        }
-
-        function viewSessionHistory() {
-            if (!campaignData.sessionHistory || campaignData.sessionHistory.length === 0) {
-                alert('No session history yet!');
-                return;
-            }
-            
-            let html = '<div style="max-height: 400px; overflow-y: auto;">';
-            html += '<h3 style="color: var(--nipple-gold); margin-bottom: 1rem;">📜 Session History</h3>';
-            
-            campaignData.sessionHistory.slice().reverse().forEach(session => {
-                const act = campaignData.acts.find(a => a.id === session.act);
-                html += `<div style="background: rgba(42, 127, 127, 0.2); border: 2px solid var(--nipple-teal); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">`;
-                html += `<h4 style="color: var(--nipple-gold);">Session ${session.sessionNumber} - ${session.date}</h4>`;
-                html += `<p><strong>Level:</strong> ${session.level} | <strong>Act:</strong> ${act ? act.name : 'Unknown'}</p>`;
-                html += `<p style="margin-top: 0.5rem; white-space: pre-wrap;">${session.notes}</p>`;
-                html += `</div>`;
-            });
-            
-            html += '</div>';
-            
-            const modal = document.createElement('div');
-            modal.className = 'modal active';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    ${html}
-                    <div class="button-group">
-                        <button onclick="this.closest('.modal').remove()">Close</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        // Update populateContent to include edit buttons
-        function populateContent() {
-            // Basic population of content
-            document.getElementById('campaign-info').innerHTML = `
-                <p><strong>Setting:</strong> ${campaignData.overview.setting}</p>
-                <p><strong>Theme:</strong> ${campaignData.overview.theme}</p>
-                <p><strong>Current Level:</strong> ${campaignData.overview.currentLevel}</p>
-            `;
-            
-            // Populate current act
-            const act = campaignData.acts.find(a => a.id === campaignData.overview.currentAct);
-            if (act) {
-                document.getElementById('current-act').innerHTML = `
-                    <div style="background: rgba(42, 127, 127, 0.2); border: 2px solid var(--nipple-teal); border-radius: 8px; padding: 1rem;">
-                        <h3>${act.name}</h3>
-                        <p><em>${act.tone}</em></p>
-                        <p><strong>Levels:</strong> ${act.levels}</p>
-                        <p>${act.description}</p>
-                    </div>
-                `;
-            }
-            
-            // Populate characters with edit buttons
-            const pcGrid = document.getElementById('pc-grid');
-            if (campaignData.playerCharacters && pcGrid) {
-                pcGrid.innerHTML = campaignData.playerCharacters.map((pc, i) => `
-                    <div class="character-card">
-                        <h3>${pc.name}</h3>
-                        <div class="stat-row">
-                            <span>Player:</span>
-                            <span>${pc.player}</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>Class:</span>
-                            <span>${pc.class}</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>Level:</span>
-                            <span>${pc.level}</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>HP:</span>
-                            <span>${pc.hp}</span>
-                        </div>
-                        <div class="stat-row">
-                            <span>AC:</span>
-                            <span>${pc.ac}</span>
-                        </div>
-                        <div style="margin-top: 0.5rem; display: flex; gap: 0.25rem;">
-                            <button class="small" onclick="editCharacter(${i})">✏️ Edit</button>
-                            <button class="small danger" onclick="deleteCharacter(${i})">🗑️</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            
-            // Populate NPCs
-            const npcList = document.getElementById('npc-list');
-            if (campaignData.npcs && npcList) {
-                npcList.innerHTML = campaignData.npcs.map(npc => `
-                    <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
-                        <h3>${npc.name}</h3>
-                        ${npc.role ? `<p><strong>Role:</strong> ${npc.role}</p>` : ''}
-                        <p>${npc.description}</p>
-                        ${npc.secret ? `<p><em>Secret: ${npc.secret}</em></p>` : ''}
-                    </div>
-                `).join('');
-            }
-            
-            // Populate act progression with edit buttons
-            const actProg = document.getElementById('act-progression');
-            if (actProg) {
-                actProg.innerHTML = `
-                    <div style="margin-bottom: 1rem;">
-                        <button onclick="addCustomAct()" class="gold">➕ Add Custom Act</button>
-                    </div>
-                ` + campaignData.acts.map(a => `
-                    <div style="background: rgba(42, 127, 127, 0.2); border: 2px solid var(--nipple-teal); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-                        <h3>${a.name} ${a.id === campaignData.overview.currentAct ? '<span style="background: var(--nipple-teal); color: white; padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.85rem; margin-left: 0.5rem;">Current</span>' : ''}</h3>
-                        <p><strong>Levels:</strong> ${a.levels} | <strong>Tone:</strong> ${a.tone}</p>
-                        <p>${a.description}</p>
-                        <div style="margin-top: 0.5rem; display: flex; gap: 0.25rem;">
-                            ${a.id !== campaignData.overview.currentAct ? `<button class="small gold" onclick="setCurrentAct(${a.id})">Set as Current</button>` : ''}
-                            <button class="small" onclick="editAct(${a.id})">✏️ Edit</button>
-                            ${a.id > 5 ? `<button class="small danger" onclick="deleteAct(${a.id})">🗑️ Delete</button>` : ''}
-                        </div>
-                    </div>
-                `).join('');
-            }
-            
-            // Populate revelations
-            const revelations = document.getElementById('revelations');
-            if (revelations && campaignData.revelations) {
-                revelations.innerHTML = campaignData.revelations.map(rev => `
-                    <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
-                        <h3>${rev.title}</h3>
-                        <p><strong>When:</strong> ${rev.when}</p>
-                        <p>${rev.description}</p>
-                    </div>
-                `).join('');
-            }
-            
-            // Populate encounters
-            const encounters = document.getElementById('prepared-encounters');
-            if (encounters && campaignData.preparedEncounters) {
-                encounters.innerHTML = campaignData.preparedEncounters.map(enc => `
-                    <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
-                        <h3>${enc.name}</h3>
-                        <p><strong>Type:</strong> ${enc.type} | <strong>CR:</strong> ${enc.cr || 'N/A'}</p>
-                        <p>${enc.description}</p>
-                    </div>
-                `).join('');
-            }
-            
-            // Load saved notes
-            const savedNotes = localStorage.getItem('nipple-notes');
-            if (savedNotes) {
-                document.getElementById('session-notes').value = savedNotes;
-            }
-        }
-
-        // Update saveNotes to include session history option
-        function saveNotes() {
-            localStorage.setItem('nipple-notes', document.getElementById('session-notes').value);
-            
-            const saveToHistory = confirm('Notes saved! Would you like to save this as a completed session in history?');
-            if (saveToHistory) {
-                saveSessionHistory();
-            } else {
-                alert('Notes saved!');
-            }
-        }
-
-        // Quest Management Functions
-        function addQuest() {
-            const title = prompt('Quest title:');
-            if (!title) return;
-            
-            const giver = prompt('Quest giver:', 'Unknown');
-            const rewards = prompt('Rewards:', '');
-            
-            if (!campaignData.quests) campaignData.quests = [];
-            
-            const newId = campaignData.quests.length > 0 ? Math.max(...campaignData.quests.map(q => q.id)) + 1 : 1;
-            
-            campaignData.quests.push({
-                id: newId,
-                title: title,
-                status: 'active',
-                giver: giver,
-                objectives: [],
-                rewards: rewards,
-                notes: ''
-            });
-            
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        function toggleObjective(questId, objIndex) {
-            const quest = campaignData.quests.find(q => q.id === questId);
-            if (quest && quest.objectives[objIndex]) {
-                quest.objectives[objIndex].completed = !quest.objectives[objIndex].completed;
-                saveToLocalStorage();
-                populateContent();
-            }
-        }
-
-        function addObjective(questId) {
-            const quest = campaignData.quests.find(q => q.id === questId);
-            if (!quest) return;
-            
-            const description = prompt('Objective description:');
-            if (!description) return;
-            
-            quest.objectives.push({
-                description: description,
-                completed: false
-            });
-            
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        function completeQuest(questId) {
-            const quest = campaignData.quests.find(q => q.id === questId);
-            if (quest) {
-                quest.status = 'completed';
-                saveToLocalStorage();
-                populateContent();
-            }
-        }
-
-        function deleteQuest(questId) {
-            if (confirm('Delete this quest?')) {
-                campaignData.quests = campaignData.quests.filter(q => q.id !== questId);
-                saveToLocalStorage();
-                populateContent();
-            }
-        }
-
-        // Faction Management Functions
-        function addFaction() {
-            const name = prompt('Faction name:');
-            if (!name) return;
-            
-            const goals = prompt('Goals:', '');
-            const notes = prompt('Notes:', '');
-            
-            if (!campaignData.factions) campaignData.factions = [];
-            
-            campaignData.factions.push({
-                name: name,
-                reputation: 0,
-                attitude: 'Neutral',
-                goals: goals,
-                notes: notes
-            });
-            
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        function adjustReputation(index, amount) {
-            if (!campaignData.factions) return;
-            
-            campaignData.factions[index].reputation = Math.max(-10, Math.min(10, campaignData.factions[index].reputation + amount));
-            
-            // Update attitude based on reputation
-            const rep = campaignData.factions[index].reputation;
-            if (rep >= 7) campaignData.factions[index].attitude = 'Allied';
-            else if (rep >= 3) campaignData.factions[index].attitude = 'Friendly';
-            else if (rep >= -2) campaignData.factions[index].attitude = 'Neutral';
-            else if (rep >= -6) campaignData.factions[index].attitude = 'Unfriendly';
-            else campaignData.factions[index].attitude = 'Hostile';
-            
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        function deleteFaction(index) {
-            if (confirm('Delete this faction?')) {
-                campaignData.factions.splice(index, 1);
-                saveToLocalStorage();
-                populateContent();
-            }
-        }
-
-        // Location Management Functions
-        function addLocation() {
-            const name = prompt('Location name:');
-            if (!name) return;
-            
-            const type = prompt('Type (e.g., City, Dungeon, Ship):', 'Location');
-            const description = prompt('Description:', '');
-            const notes = prompt('Notes:', '');
-            
-            if (!campaignData.locations) campaignData.locations = [];
-            
-            campaignData.locations.push({
-                name: name,
-                type: type,
-                description: description,
-                notes: notes
-            });
-            
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        function deleteLocation(index) {
-            if (confirm('Delete this location?')) {
-                campaignData.locations.splice(index, 1);
-                saveToLocalStorage();
-                populateContent();
-            }
-        }
-
-        // Loot Management Functions
-        function addLoot() {
-            const item = prompt('Item name:');
-            if (!item) return;
-            
-            const quantity = prompt('Quantity:', '1');
-            const value = prompt('Value:', '');
-            const location = prompt('Found at:', '');
-            const notes = prompt('Notes:', '');
-            
-            if (!campaignData.loot) campaignData.loot = [];
-            
-            campaignData.loot.push({
-                item: item,
-                quantity: parseInt(quantity) || 1,
-                value: value,
-                location: location,
-                distributed: false,
-                notes: notes
-            });
-            
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        function toggleDistributed(index) {
-            if (!campaignData.loot) return;
-            
-            campaignData.loot[index].distributed = !campaignData.loot[index].distributed;
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        function deleteLoot(index) {
-            if (confirm('Delete this item?')) {
-                campaignData.loot.splice(index, 1);
-                saveToLocalStorage();
-                populateContent();
-            }
-        }
-
-        function updateResources(field, value) {
-            if (!campaignData.partyResources) {
-                campaignData.partyResources = {
-                    credits: 0,
-                    shipFuel: '100%',
-                    supplies: 'Good',
-                    cargo: []
-                };
-            }
-            
-            campaignData.partyResources[field] = value;
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        // Timeline Management Functions
-        function addTimelineEvent() {
-            const date = prompt('Date/Time:', 'Day ' + (campaignData.timeline ? campaignData.timeline.length + 1 : 1));
-            if (!date) return;
-            
-            const event = prompt('Event description:');
-            if (!event) return;
-            
-            const notes = prompt('Notes:', '');
-            
-            if (!campaignData.timeline) campaignData.timeline = [];
-            
-            campaignData.timeline.push({
-                date: date,
-                event: event,
-                act: campaignData.overview.currentAct,
-                notes: notes
-            });
-            
-            saveToLocalStorage();
-            populateContent();
-        }
-
-        function deleteTimelineEvent(index) {
-            if (confirm('Delete this event?')) {
-                campaignData.timeline.splice(index, 1);
-                saveToLocalStorage();
-                populateContent();
-            }
-        }
-
-        // Initialize on load
-        window.addEventListener('DOMContentLoaded', init);
-    </script>
-</body>
-</html>

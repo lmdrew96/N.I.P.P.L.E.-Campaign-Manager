@@ -387,9 +387,14 @@
     <div class="tabs">
         <button class="tab-button active" onclick="showTab('overview')">Overview</button>
         <button class="tab-button" onclick="showTab('characters')">Characters</button>
+        <button class="tab-button" onclick="showTab('quests')">Quests</button>
+        <button class="tab-button" onclick="showTab('factions')">Factions</button>
+        <button class="tab-button" onclick="showTab('locations')">Locations</button>
+        <button class="tab-button" onclick="showTab('loot')">Loot & Cargo</button>
         <button class="tab-button" onclick="showTab('storyline')">Storyline</button>
         <button class="tab-button" onclick="showTab('combat')">Combat</button>
         <button class="tab-button" onclick="showTab('encounters')">Encounters</button>
+        <button class="tab-button" onclick="showTab('timeline')">Timeline</button>
         <button class="tab-button" onclick="showTab('dmnotes')">DM Notes</button>
         <button class="tab-button" onclick="showTab('data')">Data Manager</button>
     </div>
@@ -421,6 +426,60 @@
             </div>
         </div>
 
+        <div id="quests" class="tab-content">
+            <div class="card">
+                <h2>
+                    Active Quests
+                    <button onclick="addQuest()" class="small gold">➕ Add Quest</button>
+                </h2>
+                <div id="quest-list"></div>
+            </div>
+        </div>
+
+        <div id="factions" class="tab-content">
+            <div class="card">
+                <h2>
+                    Factions & Reputation
+                    <button onclick="addFaction()" class="small gold">➕ Add Faction</button>
+                </h2>
+                <div id="faction-list"></div>
+            </div>
+        </div>
+
+        <div id="locations" class="tab-content">
+            <div class="card">
+                <h2>
+                    Known Locations
+                    <button onclick="addLocation()" class="small gold">➕ Add Location</button>
+                </h2>
+                <div id="location-list"></div>
+            </div>
+        </div>
+
+        <div id="loot" class="tab-content">
+            <div class="card">
+                <h2>Party Resources</h2>
+                <div id="party-resources"></div>
+            </div>
+            <div class="card">
+                <h2>
+                    Loot & Cargo
+                    <button onclick="addLoot()" class="small gold">➕ Add Item</button>
+                </h2>
+                <div id="loot-list"></div>
+            </div>
+        </div>
+
+        <div id="timeline" class="tab-content">
+            <div class="card">
+                <h2>
+                    Campaign Timeline
+                    <button onclick="addTimelineEvent()" class="small gold">➕ Add Event</button>
+                </h2>
+                <div id="timeline-list"></div>
+            </div>
+        </div>
+
         <div id="storyline" class="tab-content">
             <div class="card">
                 <h2>Act Progression</h2>
@@ -437,6 +496,7 @@
                 <h2>Combat Initiative Tracker</h2>
                 <div id="combat-tracker">
                     <div class="button-group" style="margin-bottom: 1rem;">
+                        <button onclick="quickAddPCs()" class="gold">⚡ Quick Add PCs</button>
                         <button onclick="addCombatant()">➕ Add Combatant</button>
                         <button onclick="startCombat()" class="gold">▶️ Start Combat</button>
                         <button onclick="nextTurn()" class="gold">⏭️ Next Turn</button>
@@ -1763,6 +1823,193 @@
                 `).join('');
             }
             
+            // Populate quests
+            const questList = document.getElementById('quest-list');
+            if (questList && campaignData.quests) {
+                const activeQuests = campaignData.quests.filter(q => q.status === 'active');
+                if (activeQuests.length === 0) {
+                    questList.innerHTML = '<p style="text-align: center; color: var(--nipple-teal); padding: 2rem;">No active quests</p>';
+                } else {
+                    questList.innerHTML = activeQuests.map(quest => `
+                        <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
+                            <h3>${quest.title}</h3>
+                            <p><strong>Quest Giver:</strong> ${quest.giver}</p>
+                            ${quest.rewards ? `<p><strong>Rewards:</strong> ${quest.rewards}</p>` : ''}
+                            ${quest.objectives && quest.objectives.length > 0 ? `
+                                <div style="margin-top: 0.5rem;">
+                                    <strong>Objectives:</strong>
+                                    ${quest.objectives.map((obj, i) => `
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
+                                            <input type="checkbox" ${obj.completed ? 'checked' : ''} onchange="toggleObjective(${quest.id}, ${i})">
+                                            <span style="${obj.completed ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${obj.description}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                            ${quest.notes ? `<p style="margin-top: 0.5rem;"><em>${quest.notes}</em></p>` : ''}
+                            <div style="margin-top: 0.5rem; display: flex; gap: 0.25rem;">
+                                <button class="small" onclick="addObjective(${quest.id})">➕ Add Objective</button>
+                                <button class="small gold" onclick="completeQuest(${quest.id})">✓ Complete</button>
+                                <button class="small danger" onclick="deleteQuest(${quest.id})">🗑️</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+            
+            // Populate factions
+            const factionList = document.getElementById('faction-list');
+            if (factionList && campaignData.factions) {
+                if (campaignData.factions.length === 0) {
+                    factionList.innerHTML = '<p style="text-align: center; color: var(--nipple-teal); padding: 2rem;">No factions tracked</p>';
+                } else {
+                    factionList.innerHTML = campaignData.factions.map((faction, i) => {
+                        const repColor = faction.reputation >= 5 ? 'var(--nipple-gold)' : 
+                                        faction.reputation >= 0 ? 'var(--nipple-teal)' : 
+                                        'var(--nipple-red)';
+                        return `
+                            <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid ${repColor}; border-radius: 5px;">
+                                <h3>${faction.name}</h3>
+                                <div style="display: flex; align-items: center; gap: 1rem; margin: 0.5rem 0;">
+                                    <span><strong>Reputation:</strong></span>
+                                    <button class="small" onclick="adjustReputation(${i}, -1)">-</button>
+                                    <span style="color: ${repColor}; font-weight: bold; min-width: 3rem; text-align: center;">${faction.reputation}</span>
+                                    <button class="small" onclick="adjustReputation(${i}, 1)">+</button>
+                                    <span style="background: ${repColor}; color: var(--nipple-dark); padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.85rem;">${faction.attitude}</span>
+                                </div>
+                                ${faction.goals ? `<p><strong>Goals:</strong> ${faction.goals}</p>` : ''}
+                                ${faction.notes ? `<p><em>${faction.notes}</em></p>` : ''}
+                                <div style="margin-top: 0.5rem;">
+                                    <button class="small danger" onclick="deleteFaction(${i})">🗑️ Delete</button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+            
+            // Populate locations
+            const locationList = document.getElementById('location-list');
+            if (locationList && campaignData.locations) {
+                if (campaignData.locations.length === 0) {
+                    locationList.innerHTML = '<p style="text-align: center; color: var(--nipple-teal); padding: 2rem;">No locations recorded</p>';
+                } else {
+                    locationList.innerHTML = campaignData.locations.map((loc, i) => `
+                        <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
+                            <h3>${loc.name}</h3>
+                            <p><strong>Type:</strong> ${loc.type}</p>
+                            ${loc.description ? `<p>${loc.description}</p>` : ''}
+                            ${loc.notes ? `<p><em>${loc.notes}</em></p>` : ''}
+                            <div style="margin-top: 0.5rem;">
+                                <button class="small danger" onclick="deleteLocation(${i})">🗑️ Delete</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+            
+            // Populate party resources
+            const partyResources = document.getElementById('party-resources');
+            if (partyResources) {
+                if (!campaignData.partyResources) {
+                    campaignData.partyResources = {
+                        credits: 1250,
+                        shipFuel: '75%',
+                        supplies: 'Good',
+                        cargo: []
+                    };
+                }
+                partyResources.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div style="background: rgba(42, 127, 127, 0.2); padding: 1rem; border-radius: 5px;">
+                            <strong>Credits:</strong>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                                <input type="number" value="${campaignData.partyResources.credits}" onchange="updateResources('credits', parseInt(this.value))" style="width: 100px;">
+                            </div>
+                        </div>
+                        <div style="background: rgba(42, 127, 127, 0.2); padding: 1rem; border-radius: 5px;">
+                            <strong>Ship Fuel:</strong>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                                <input type="text" value="${campaignData.partyResources.shipFuel}" onchange="updateResources('shipFuel', this.value)" style="width: 100px;">
+                            </div>
+                        </div>
+                        <div style="background: rgba(42, 127, 127, 0.2); padding: 1rem; border-radius: 5px;">
+                            <strong>Supplies:</strong>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                                <select onchange="updateResources('supplies', this.value)" style="width: 100px;">
+                                    <option ${campaignData.partyResources.supplies === 'Excellent' ? 'selected' : ''}>Excellent</option>
+                                    <option ${campaignData.partyResources.supplies === 'Good' ? 'selected' : ''}>Good</option>
+                                    <option ${campaignData.partyResources.supplies === 'Low' ? 'selected' : ''}>Low</option>
+                                    <option ${campaignData.partyResources.supplies === 'Critical' ? 'selected' : ''}>Critical</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    ${campaignData.partyResources.cargo && campaignData.partyResources.cargo.length > 0 ? `
+                        <div style="margin-top: 1rem;">
+                            <strong>Current Cargo:</strong>
+                            ${campaignData.partyResources.cargo.map(c => `
+                                <div style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(42, 127, 127, 0.2); border-radius: 5px;">
+                                    <strong>${c.item}</strong> → ${c.destination} (${c.value})
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                `;
+            }
+            
+            // Populate loot
+            const lootList = document.getElementById('loot-list');
+            if (lootList && campaignData.loot) {
+                if (campaignData.loot.length === 0) {
+                    lootList.innerHTML = '<p style="text-align: center; color: var(--nipple-teal); padding: 2rem;">No loot tracked</p>';
+                } else {
+                    lootList.innerHTML = campaignData.loot.map((item, i) => `
+                        <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid ${item.distributed ? 'var(--nipple-teal)' : 'var(--nipple-gold)'}; border-radius: 5px; ${item.distributed ? 'opacity: 0.6;' : ''}">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div style="flex: 1;">
+                                    <h3 style="${item.distributed ? 'text-decoration: line-through;' : ''}">${item.item} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</h3>
+                                    ${item.value ? `<p><strong>Value:</strong> ${item.value}</p>` : ''}
+                                    ${item.location ? `<p><strong>Found:</strong> ${item.location}</p>` : ''}
+                                    ${item.notes ? `<p><em>${item.notes}</em></p>` : ''}
+                                </div>
+                                <div style="display: flex; gap: 0.25rem; flex-direction: column;">
+                                    <button class="small ${item.distributed ? '' : 'gold'}" onclick="toggleDistributed(${i})">
+                                        ${item.distributed ? '↩️ Undistribute' : '✓ Distribute'}
+                                    </button>
+                                    <button class="small danger" onclick="deleteLoot(${i})">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+            
+            // Populate timeline
+            const timelineList = document.getElementById('timeline-list');
+            if (timelineList && campaignData.timeline) {
+                if (campaignData.timeline.length === 0) {
+                    timelineList.innerHTML = '<p style="text-align: center; color: var(--nipple-teal); padding: 2rem;">No timeline events</p>';
+                } else {
+                    timelineList.innerHTML = campaignData.timeline.map((event, i) => {
+                        const act = campaignData.acts.find(a => a.id === event.act);
+                        return `
+                            <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(13, 31, 45, 0.6); border-left: 3px solid var(--nipple-gold); border-radius: 5px;">
+                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                    <div style="flex: 1;">
+                                        <h3>${event.date}</h3>
+                                        <p>${event.event}</p>
+                                        ${act ? `<p style="font-size: 0.85rem; color: var(--nipple-teal); margin-top: 0.25rem;">${act.name}</p>` : ''}
+                                        ${event.notes ? `<p style="margin-top: 0.5rem;"><em>${event.notes}</em></p>` : ''}
+                                    </div>
+                                    <button class="small danger" onclick="deleteTimelineEvent(${i})">🗑️</button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+            
             // Load saved notes
             const savedNotes = localStorage.getItem('nipple-notes');
             if (savedNotes) {
@@ -1866,6 +2113,98 @@
             combatants.splice(index, 1);
             if (currentTurn >= combatants.length) currentTurn = 0;
             updateInitiativeList();
+        }
+
+        // Quick Add PCs to Combat
+        function quickAddPCs() {
+            if (!campaignData.playerCharacters || campaignData.playerCharacters.length === 0) {
+                alert('No player characters found! Add some characters first in the Characters tab.');
+                return;
+            }
+            
+            // Create modal HTML
+            let html = '<div style="max-height: 400px; overflow-y: auto;">';
+            html += '<h3 style="color: var(--nipple-gold); margin-bottom: 1rem;">⚡ Quick Add Player Characters</h3>';
+            html += '<p style="margin-bottom: 1rem;">Select characters to add to combat. Their HP and AC will be auto-filled from character data.</p>';
+            
+            html += '<div style="display: grid; gap: 0.5rem;">';
+            campaignData.playerCharacters.forEach((pc, i) => {
+                html += `<div style="background: rgba(42, 127, 127, 0.2); border: 2px solid var(--nipple-teal); border-radius: 5px; padding: 0.75rem;">`;
+                html += `<label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">`;
+                html += `<input type="checkbox" id="pc-select-${i}" style="width: auto; margin: 0;">`;
+                html += `<div style="flex: 1;">`;
+                html += `<strong style="color: var(--nipple-gold);">${pc.name}</strong>`;
+                html += `<div style="font-size: 0.9rem; color: var(--nipple-light); margin-top: 0.25rem;">`;
+                html += `${pc.class} ${pc.level} | HP: ${pc.hp} | AC: ${pc.ac}`;
+                html += `</div>`;
+                html += `</div>`;
+                html += `</label>`;
+                html += `</div>`;
+            });
+            html += '</div>';
+            html += '</div>';
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    ${html}
+                    <div class="button-group">
+                        <button class="gold" onclick="addSelectedPCsToCombat(this.closest('.modal'))">Add to Combat</button>
+                        <button onclick="this.closest('.modal').remove()">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function addSelectedPCsToCombat(modal) {
+            const selectedPCs = [];
+            
+            // Collect selected PCs
+            campaignData.playerCharacters.forEach((pc, i) => {
+                const checkbox = document.getElementById(`pc-select-${i}`);
+                if (checkbox && checkbox.checked) {
+                    selectedPCs.push({...pc, index: i});
+                }
+            });
+            
+            if (selectedPCs.length === 0) {
+                alert('Please select at least one character!');
+                return;
+            }
+            
+            // Close modal
+            modal.remove();
+            
+            // Prompt for initiatives
+            let initiativePrompt = 'Enter initiative rolls for:\n\n';
+            selectedPCs.forEach(pc => {
+                initiativePrompt += `${pc.name}: `;
+            });
+            initiativePrompt += '\n\nEnter as comma-separated values (e.g., "15, 12, 18")';
+            
+            const initiativesInput = prompt(initiativePrompt);
+            if (!initiativesInput) return;
+            
+            const initiatives = initiativesInput.split(',').map(i => parseInt(i.trim()) || 10);
+            
+            // Add each PC to combat
+            selectedPCs.forEach((pc, i) => {
+                const initiative = initiatives[i] || 10;
+                
+                combatants.push({
+                    name: pc.name,
+                    initiative: initiative,
+                    hp: pc.hp,
+                    maxHp: pc.hp,
+                    ac: pc.ac,
+                    conditions: []
+                });
+            });
+            
+            updateInitiativeList();
+            alert(`Added ${selectedPCs.length} character(s) to combat!`);
         }
 
         // Dice Roller Functions
@@ -2245,6 +2584,238 @@
                 saveSessionHistory();
             } else {
                 alert('Notes saved!');
+            }
+        }
+
+        // Quest Management Functions
+        function addQuest() {
+            const title = prompt('Quest title:');
+            if (!title) return;
+            
+            const giver = prompt('Quest giver:', 'Unknown');
+            const rewards = prompt('Rewards:', '');
+            
+            if (!campaignData.quests) campaignData.quests = [];
+            
+            const newId = campaignData.quests.length > 0 ? Math.max(...campaignData.quests.map(q => q.id)) + 1 : 1;
+            
+            campaignData.quests.push({
+                id: newId,
+                title: title,
+                status: 'active',
+                giver: giver,
+                objectives: [],
+                rewards: rewards,
+                notes: ''
+            });
+            
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        function toggleObjective(questId, objIndex) {
+            const quest = campaignData.quests.find(q => q.id === questId);
+            if (quest && quest.objectives[objIndex]) {
+                quest.objectives[objIndex].completed = !quest.objectives[objIndex].completed;
+                saveToLocalStorage();
+                populateContent();
+            }
+        }
+
+        function addObjective(questId) {
+            const quest = campaignData.quests.find(q => q.id === questId);
+            if (!quest) return;
+            
+            const description = prompt('Objective description:');
+            if (!description) return;
+            
+            quest.objectives.push({
+                description: description,
+                completed: false
+            });
+            
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        function completeQuest(questId) {
+            const quest = campaignData.quests.find(q => q.id === questId);
+            if (quest) {
+                quest.status = 'completed';
+                saveToLocalStorage();
+                populateContent();
+            }
+        }
+
+        function deleteQuest(questId) {
+            if (confirm('Delete this quest?')) {
+                campaignData.quests = campaignData.quests.filter(q => q.id !== questId);
+                saveToLocalStorage();
+                populateContent();
+            }
+        }
+
+        // Faction Management Functions
+        function addFaction() {
+            const name = prompt('Faction name:');
+            if (!name) return;
+            
+            const goals = prompt('Goals:', '');
+            const notes = prompt('Notes:', '');
+            
+            if (!campaignData.factions) campaignData.factions = [];
+            
+            campaignData.factions.push({
+                name: name,
+                reputation: 0,
+                attitude: 'Neutral',
+                goals: goals,
+                notes: notes
+            });
+            
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        function adjustReputation(index, amount) {
+            if (!campaignData.factions) return;
+            
+            campaignData.factions[index].reputation = Math.max(-10, Math.min(10, campaignData.factions[index].reputation + amount));
+            
+            // Update attitude based on reputation
+            const rep = campaignData.factions[index].reputation;
+            if (rep >= 7) campaignData.factions[index].attitude = 'Allied';
+            else if (rep >= 3) campaignData.factions[index].attitude = 'Friendly';
+            else if (rep >= -2) campaignData.factions[index].attitude = 'Neutral';
+            else if (rep >= -6) campaignData.factions[index].attitude = 'Unfriendly';
+            else campaignData.factions[index].attitude = 'Hostile';
+            
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        function deleteFaction(index) {
+            if (confirm('Delete this faction?')) {
+                campaignData.factions.splice(index, 1);
+                saveToLocalStorage();
+                populateContent();
+            }
+        }
+
+        // Location Management Functions
+        function addLocation() {
+            const name = prompt('Location name:');
+            if (!name) return;
+            
+            const type = prompt('Type (e.g., City, Dungeon, Ship):', 'Location');
+            const description = prompt('Description:', '');
+            const notes = prompt('Notes:', '');
+            
+            if (!campaignData.locations) campaignData.locations = [];
+            
+            campaignData.locations.push({
+                name: name,
+                type: type,
+                description: description,
+                notes: notes
+            });
+            
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        function deleteLocation(index) {
+            if (confirm('Delete this location?')) {
+                campaignData.locations.splice(index, 1);
+                saveToLocalStorage();
+                populateContent();
+            }
+        }
+
+        // Loot Management Functions
+        function addLoot() {
+            const item = prompt('Item name:');
+            if (!item) return;
+            
+            const quantity = prompt('Quantity:', '1');
+            const value = prompt('Value:', '');
+            const location = prompt('Found at:', '');
+            const notes = prompt('Notes:', '');
+            
+            if (!campaignData.loot) campaignData.loot = [];
+            
+            campaignData.loot.push({
+                item: item,
+                quantity: parseInt(quantity) || 1,
+                value: value,
+                location: location,
+                distributed: false,
+                notes: notes
+            });
+            
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        function toggleDistributed(index) {
+            if (!campaignData.loot) return;
+            
+            campaignData.loot[index].distributed = !campaignData.loot[index].distributed;
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        function deleteLoot(index) {
+            if (confirm('Delete this item?')) {
+                campaignData.loot.splice(index, 1);
+                saveToLocalStorage();
+                populateContent();
+            }
+        }
+
+        function updateResources(field, value) {
+            if (!campaignData.partyResources) {
+                campaignData.partyResources = {
+                    credits: 0,
+                    shipFuel: '100%',
+                    supplies: 'Good',
+                    cargo: []
+                };
+            }
+            
+            campaignData.partyResources[field] = value;
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        // Timeline Management Functions
+        function addTimelineEvent() {
+            const date = prompt('Date/Time:', 'Day ' + (campaignData.timeline ? campaignData.timeline.length + 1 : 1));
+            if (!date) return;
+            
+            const event = prompt('Event description:');
+            if (!event) return;
+            
+            const notes = prompt('Notes:', '');
+            
+            if (!campaignData.timeline) campaignData.timeline = [];
+            
+            campaignData.timeline.push({
+                date: date,
+                event: event,
+                act: campaignData.overview.currentAct,
+                notes: notes
+            });
+            
+            saveToLocalStorage();
+            populateContent();
+        }
+
+        function deleteTimelineEvent(index) {
+            if (confirm('Delete this event?')) {
+                campaignData.timeline.splice(index, 1);
+                saveToLocalStorage();
+                populateContent();
             }
         }
 

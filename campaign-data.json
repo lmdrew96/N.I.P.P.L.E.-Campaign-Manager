@@ -263,6 +263,123 @@
       "content": "That Which Is Bad - Controls N.I.P.P.L.E."
     }
   ],
+  "quests": [
+    {
+      "id": 1,
+      "title": "Deliver Medical Supplies to Station Zeta-7",
+      "status": "active",
+      "giver": "N.I.P.P.L.E. Dispatch",
+      "objectives": [
+        {
+          "description": "Pick up supplies from Warehouse 3",
+          "completed": true
+        },
+        {
+          "description": "Navigate to Station Zeta-7",
+          "completed": false
+        },
+        {
+          "description": "Deliver to Medical Bay",
+          "completed": false
+        }
+      ],
+      "rewards": "500 credits, +1 N.I.P.P.L.E. reputation",
+      "notes": "Routine delivery, but station has been acting strange lately"
+    }
+  ],
+  "factions": [
+    {
+      "name": "N.I.P.P.L.E. Corporation",
+      "reputation": 5,
+      "attitude": "Neutral",
+      "goals": "Strip-mine FeySpace magic for TWiB",
+      "notes": "Party's employer, secretly evil"
+    },
+    {
+      "name": "Giant Talking Space Cats",
+      "reputation": 3,
+      "attitude": "Friendly",
+      "goals": "Maintain cosmic balance, observe",
+      "notes": "Ancient species, can be summoned with can opener"
+    },
+    {
+      "name": "The Resistance",
+      "reputation": 0,
+      "attitude": "Unknown",
+      "goals": "Expose and stop N.I.P.P.L.E.",
+      "notes": "Led by Kaelen Voss, will contact party in Act 2"
+    }
+  ],
+  "locations": [
+    {
+      "name": "Kestrel-11 (Party Ship)",
+      "type": "Ship",
+      "description": "Small cargo vessel, telepathically controlled by Wisperincheeks",
+      "notes": "Has AI named Pip that reports to N.I.P.P.L.E."
+    },
+    {
+      "name": "N.I.P.P.L.E. HQ Station",
+      "type": "Space Station",
+      "description": "Massive corporate headquarters in regular space",
+      "notes": "Where the party receives assignments"
+    },
+    {
+      "name": "The Shimmer",
+      "type": "Border Region",
+      "description": "Boundary between regular space and FeySpace",
+      "notes": "Reality gets weird here, first GTSC encounter location"
+    }
+  ],
+  "loot": [
+    {
+      "item": "Premium SpaceNip",
+      "quantity": 3,
+      "value": "20gp each",
+      "location": "Found in cargo hold",
+      "distributed": false,
+      "notes": "For bribing GTSCs"
+    },
+    {
+      "item": "Mysterious Data Chip",
+      "quantity": 1,
+      "value": "Unknown",
+      "location": "Hidden in last delivery",
+      "distributed": false,
+      "notes": "Encrypted, might be from Kaelen"
+    }
+  ],
+  "timeline": [
+    {
+      "date": "Day 1",
+      "event": "Campaign Start - First delivery mission",
+      "act": 1,
+      "notes": "Party meets, establishes dynamics"
+    },
+    {
+      "date": "Day 3",
+      "event": "Current Session",
+      "act": 1,
+      "notes": "Third delivery, strange readings near The Shimmer"
+    },
+    {
+      "date": "Day 15 (planned)",
+      "event": "First FeySpace Entry",
+      "act": 2,
+      "notes": "Accidental jump into FeySpace"
+    }
+  ],
+  "partyResources": {
+    "credits": 1250,
+    "shipFuel": "75%",
+    "supplies": "Good",
+    "cargo": [
+      {
+        "item": "Medical Supplies",
+        "destination": "Station Zeta-7",
+        "value": "500 credits on delivery"
+      }
+    ]
+  },
   "magicItems": [
     {
       "name": "Terms & Conditions Shroud",
